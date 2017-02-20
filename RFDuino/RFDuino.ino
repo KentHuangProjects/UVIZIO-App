@@ -1,10 +1,10 @@
 /*
- * Usage: Send 2-digit HEX array to the RFduino. (Array of double-digit hex values).
+ * Usage: Send a binary array to the RFduino..
  * 
  * Array Definiton (Corresponds to the Data struct definiton below)
  * 
  * 0: mode value  -> See MODE_X options below
- * 1: period      -> time (in ms) between iterations. Rounded up to MIN_PERIOD if below. Currently doesn't do much since the max for a 2-digit hex (255) is < 500...
+ * 1: period      -> time (in ms) between iterations. Rounded up to MIN_PERIOD if below. Currently doesn't do much since the max for a 2-digit hex (255) is < 500... Needs to move to 2+ bytes
  * 2: num_pixels  -> number of pixels/frames to iterate through. Doesn't matter unless you're using MODE_FRAMES. Assumed <= MAX_FRAMES.
  * 3-5+           -> color intensity value. 3-> r (0-255 or FF), 4 -> g, 5 -> b. If num_pixels = 2, then 6-> r2, 7->g, 8->b for frame 2, etc. 
  * 
