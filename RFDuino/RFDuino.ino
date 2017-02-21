@@ -1,5 +1,5 @@
 /*
- * Usage: Send 2-digit HEX array to the RFduino. (Array of double-digit hex values).
+ * Usage: Send a binary array to the RFduino..
  * 
  * Array Definiton (Corresponds to the Data struct definiton below)
  * 
