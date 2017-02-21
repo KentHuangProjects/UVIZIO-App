@@ -4,9 +4,9 @@
  * Array Definiton (Corresponds to the Data struct definiton below)
  * 
  * 0: mode value  -> See MODE_X options below
- * 1: period      -> time (in ms) between iterations. Rounded up to MIN_PERIOD if below. Currently doesn't do much since the max for a 2-digit hex (255) is < 500...
- * 2: num_pixels  -> number of pixels/frames to iterate through. Doesn't matter unless you're using MODE_FRAMES. Assumed <= MAX_FRAMES.
- * 3-5+           -> color intensity value. 3-> r (0-255 or FF), 4 -> g, 5 -> b. If num_pixels = 2, then 6-> r2, 7->g, 8->b for frame 2, etc. 
+ * 1-2: period      -> time (in ms) between iterations. Rounded up to MIN_PERIOD if below. Currently doesn't do much since the max for a 2-digit hex (255) is < 500...
+ * 3: num_pixels  -> number of pixels/frames to iterate through. Doesn't matter unless you're using MODE_FRAMES. Assumed <= MAX_FRAMES.
+ * 4-6+           -> color intensity value. 4-> r (0-255 or FF), 5 -> g, 6 -> b. If num_pixels = 2, then 7-> r2, 8->g, 9->b for frame 2, etc. 
  * 
  */
 
@@ -22,6 +22,9 @@
 
 #define MIN_PERIOD 500
 #define MAX_FRAMES 10
+
+int min_period_low = MIN_PERIOD & 0xff;
+int min_period_high = (MIN_PERIOD >> 8) & 0xff;
 
 // pin 2 on the RGB shield is the red led
 int RED = 2;
@@ -60,7 +63,7 @@ Pixel PIXEL_OFF = PIXEL_BLACK;
 Pixel PIXEL_ON  = PIXEL_WHITE;
 
 Data DATA = {MODE_STATIC, MIN_PERIOD, 1, {PIXEL_OFF} };
-char *DEFAULT_RECIEVE = {MODE_STATIC, MIN_PERIOD, 1, {PIXEL_OFF}}; // ERROR: casting int > 255 to byte
+char DEFAULT_RECIEVE[] = {MODE_STATIC, min_period_high, min_period_low, 1, 0, 0, 0}; // ERROR: casting int > 255 to byte
 
 void setup() {
   // setup the leds for output
@@ -233,18 +236,21 @@ void RFduinoBLE_onDisconnect() {
 
 void RFduinoBLE_onReceive(char *data, int len) {
   // each transmission should contain an RGB triple
-  if (len < 3) data = DEFAULT_RECIEVE;
+  if (len < 4) data = DEFAULT_RECIEVE;
+  else
   {
     
 
-    // get the speed values
     DATA.mode = data[0];
-    DATA.period = (data[1] < MIN_PERIOD ? MIN_PERIOD : data[1]);
-    DATA.num_pixels = (data[2] < 1 ? 1 : data[2]);
+    
+    int tmpPeriod   =  256 * data[1] + data[2];
+    DATA.period     = tmpPeriod > MIN_PERIOD ? tmpPeriod : MIN_PERIOD;
+    
+    DATA.num_pixels = (data[3] < 1 ? 1 : data[3]);
 
     //Pixel pixels[MAX_FRAMES];
 
-    int base = 3;
+    int base = 4;
     for(int i=0; i<DATA.num_pixels; i++)
     {
       // get the RGB values
