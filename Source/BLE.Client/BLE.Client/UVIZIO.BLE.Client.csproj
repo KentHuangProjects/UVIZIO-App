@@ -44,6 +44,9 @@
     <Compile Include="Helpers\Settings.cs" />
     <Compile Include="Pages\BasePage.cs" />
     <Compile Include="Pages\BaseTabbedPage.cs" />
+    <Compile Include="Pages\DevicePage.xaml.cs">
+      <DependentUpon>DevicePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\CharacteristicDetailPage.xaml.cs">
       <DependentUpon>CharacteristicDetailPage.xaml</DependentUpon>
     </Compile>
@@ -66,6 +69,7 @@
     <Compile Include="ViewModels\DescriptorDetailViewModel.cs" />
     <Compile Include="ViewModels\DescriptorListViewModel.cs" />
     <Compile Include="ViewModels\DeviceListItemViewModel.cs" />
+    <Compile Include="ViewModels\DeviceViewModel.cs" />
     <Compile Include="ViewModels\ServiceListViewModel.cs" />
     <Compile Include="ViewModels\DeviceListViewModel.cs" />
     <Compile Include="Pages\DeviceListPage.xaml.cs">
@@ -177,6 +181,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pages\DescriptorDetailPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Pages\DevicePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>

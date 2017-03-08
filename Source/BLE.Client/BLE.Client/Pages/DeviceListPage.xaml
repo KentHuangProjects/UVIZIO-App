@@ -8,11 +8,16 @@
   <pages:BaseTabbedPage.Resources>
     <ResourceDictionary>
      <DataTemplate x:Key="DeviceItemTemplate">
+       
               <ViewCell>
+                
                 <ViewCell.ContextActions>
                   <MenuItem Command="{Binding Path=BindingContext.DisconnectCommand, Source={x:Reference DevicePage}}"
                             CommandParameter="{Binding .}" IsDestructive="True"
                             Text="Disconnect"/>
+                  <MenuItem Command="{Binding Path=BindingContext.ConnectCommand, Source={x:Reference DevicePage}}"
+                            CommandParameter="{Binding .}"
+                            Text="View Services"/>
                   <MenuItem Command="{Binding Path=BindingContext.CopyGuidCommand, Source={x:Reference DevicePage}}"
                             CommandParameter="{Binding .}"
                             Text="Copy Guid"/>
@@ -33,8 +38,8 @@
                     </DataTrigger>
                   </Grid.Triggers>
                   <StackLayout Orientation="Vertical" VerticalOptions="Center">
-                    <Label Text="{Binding Name}" FontSize="Large" />
-                    <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/>
+                    <Label Text="{Binding Name}" FontSize="26" />
+                    <!-- GUID <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/> -->
                   </StackLayout>
                   <Label Grid.Column="1"
                          Margin="10"
@@ -55,7 +60,7 @@
           <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <StackLayout BackgroundColor="#FF6969" Padding="10" IsVisible="{Binding IsStateOn, Converter={StaticResource InverseBoolean}}">
-          <Label Text="{Binding StateText}" FontSize="18" HorizontalTextAlignment="Center"></Label>
+          <Label Text="{Binding StateText}" FontSize="22" HorizontalTextAlignment="Center"></Label>
         </StackLayout>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
@@ -67,6 +72,7 @@
         </ListView>
 
 
+        
         <Label Grid.Row="2" Text="{Binding PreviousGuid, StringFormat='{0}'}" FontSize="Small" TextColor="Gray" VerticalTextAlignment="End"/>
         <StackLayout Grid.Row="3" Orientation="Horizontal">
           <Button Text="Connect to previous" Command="{Binding ConnectToPreviousCommand}" HorizontalOptions="FillAndExpand"/>
@@ -77,6 +83,7 @@
                              VerticalOptions="Center"
                              HorizontalOptions="End"/>
         </StackLayout>
+
 
       </Grid>
     </pages:BasePage>

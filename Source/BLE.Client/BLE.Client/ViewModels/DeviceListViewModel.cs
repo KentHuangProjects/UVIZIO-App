@@ -41,6 +41,8 @@ namespace BLE.Client.ViewModels
 
         public MvxCommand<DeviceListItemViewModel> ConnectDisposeCommand => new MvxCommand<DeviceListItemViewModel>(ConnectAndDisposeDevice);
 
+        public MvxCommand<DeviceListItemViewModel> ConnectCommand => new MvxCommand<DeviceListItemViewModel>(ShowServices);
+
         public ObservableCollection<DeviceListItemViewModel> Devices { get; set; } = new ObservableCollection<DeviceListItemViewModel>();
         public bool IsRefreshing => Adapter.IsScanning;
         public bool IsStateOn => _bluetoothLe.IsOn;
@@ -255,11 +257,12 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        // TODO: Change this to go to new UI pages
         private async void HandleSelectedDevice(DeviceListItemViewModel device)
         {
-            if (await ConnectDeviceAsync(device))
+            if (await ConnectDeviceAsync(device, false))
             {
-                ShowViewModel<ServiceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, device.Device.Id.ToString() } }));
+                ShowViewModel<DeviceViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, device.Device.Id.ToString() } }));
             }
         }
 
@@ -280,7 +283,7 @@ namespace BLE.Client.ViewModels
 
                 var config = new ProgressDialogConfig()
                 {
-                    Title = $"Connecting to '{device.Id}'",
+                    Title = $"Connecting to '{device.Name}'",
                     CancelText = "Cancel",
                     IsDeterministic = false,
                     OnCancel = tokenSource.Cancel
@@ -361,6 +364,40 @@ namespace BLE.Client.ViewModels
         private bool CanConnectToPrevious()
         {
             return PreviousGuid != default(Guid);
+        }
+
+        private async void ShowServices(DeviceListItemViewModel device)
+        {
+            if (await ConnectDeviceAsync(device, false))
+            {
+                ShowViewModel<ServiceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, device.Device.Id.ToString() } }));
+            }
+
+            /*
+            try
+            {
+                using (item.Device)
+                {
+                    _userDialogs.ShowLoading($"Connecting to {item.Name} ...");
+                    await Adapter.ConnectToDeviceAsync(item.Device);
+                    item.Update();
+                    _userDialogs.ShowSuccess($"Connected {item.Device.Name}");
+
+                    _userDialogs.HideLoading();
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                _userDialogs.Alert(ex.Message, "Failed to connect.");
+            }
+            finally
+            {
+                _userDialogs.HideLoading();
+                device.Update();
+            }
+
+            */
         }
 
         private async void ConnectAndDisposeDevice(DeviceListItemViewModel item)

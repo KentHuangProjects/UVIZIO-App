@@ -7,10 +7,14 @@ using Plugin.BLE.Abstractions.Contracts;
 
 namespace BLE.Client.ViewModels
 {
+
+
     public class ServiceListViewModel : BaseViewModel
     {
         private readonly IUserDialogs _userDialogs;
         private IDevice _device;
+
+
 
         public IList<IService> Services { get; private set; }
         public ServiceListViewModel(IAdapter adapter, IUserDialogs userDialogs) : base(adapter)
