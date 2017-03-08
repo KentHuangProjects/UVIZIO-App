@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.uviz.ble.client" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.uviz.ble.client.x2017.x03.x07" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="23" />
-	<application android:label="UVIZIO BLE" android:theme="@style/MyTheme" android:icon="@drawable/logo"></application>
+	<application android:label="UVIZIO 2017.03.07" android:theme="@style/MyTheme" android:icon="@drawable/logo"></application>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.BLUETOOTH" />
