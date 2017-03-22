@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseMasterDetailPage  xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:BLE.Client.Pages;assembly=BLE.Client"
+             x:Class="BLE.Client.Pages.PatternPage"
+             Title="Patterns"
+             x:Name="PatternPage">
+    <MasterDetailPage.Master>
+        <ContentPage Title="Menu" BackgroundColor="Black"
+             BackgroundImage="menu_bg.png">
+
+
+            <ContentPage.Resources>
+                <ResourceDictionary>
+                    <DataTemplate x:Key="MenuItemTemplate">
+                        <ViewCell>
+
+
+                            <Label Text="{Binding Title}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+
+
+                        </ViewCell>
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ContentPage.Resources>
+
+            <ContentPage.Content>
+                <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
+                    <ListView x:Name="listView" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+
+                    </ListView>
+                </StackLayout>
+
+            </ContentPage.Content>
+        </ContentPage>
+    </MasterDetailPage.Master>
+
+
+    <MasterDetailPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <pages:BaseTabbedPage 
+                                Title="Patterns">
+                    <!--Pages can be added as references or inline-->
+                    <pages:BaseTabbedPage.Children>
+
+                        <pages:BasePage
+                                        Title="Patterns">
+                            <StackLayout>
+                                <ListView x:Name="ModeList" RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
+
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <ViewCell>
+                                                <!--<RelativeLayout>
+                                                    <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                                                    <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                                                </RelativeLayout>-->
+
+                                                <Grid BackgroundColor="Black">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="*" />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="8*" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                                                    <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+
+                                                    <Label TextColor="White" Text="{Binding Name}" Margin="15" FontSize="Medium" Grid.Row="1" Grid.Column="0" />
+                                                    <Image Source="brightness_icon.png" Margin="5" Grid.Row="1" Grid.Column="1" />
+                                                    <Image Source="{Binding SelectedImageSrc}" Margin="8" Grid.Row="1" Grid.Column="2" />
+                                                </Grid>
+
+                                            </ViewCell>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+
+                                </ListView >
+                            </StackLayout>
+                        </pages:BasePage>
+
+                        <ContentPage Title="Settings">
+                            <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="StartAndExpand">
+
+                                <Slider x:Name="Speed" Minimum="0" Maximum="100" />
+                                <Label HorizontalOptions="Center" Text="Speed" />
+
+                                <BoxView HeightRequest="20"  />
+
+
+                                <Slider x:Name="Brightness" Minimum="0" Maximum="100" />
+                                <Label HorizontalOptions="Center" Text="Brightness" />
+                            </StackLayout>
+                        </ContentPage>
+
+                        </pages:BaseTabbedPage.Children>
+
+                </pages:BaseTabbedPage>
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+</pages:BaseMasterDetailPage>
+    

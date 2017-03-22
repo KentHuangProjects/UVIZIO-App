@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App4.PresetPatternFromTab"
+             Title="Modes">
+  <StackLayout>
+        <ListView x:Name="ModeList" RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <!--<RelativeLayout>
+                            <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                            <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                        </RelativeLayout>-->
+                        
+                        <Grid BackgroundColor="Black">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="8*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                            <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+
+                            <Label TextColor="White" Text="{Binding Name}" Margin="15" FontSize="Medium" Grid.Row="1" Grid.Column="0" />
+                            <Image Source="brightness_icon.png" Margin="5" Grid.Row="1" Grid.Column="1" />
+                            <Image Source="{Binding SelectedImageSrc}" Margin="8" Grid.Row="1" Grid.Column="2" />
+                        </Grid>
+
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView >
+    </StackLayout>
+</ContentPage>
