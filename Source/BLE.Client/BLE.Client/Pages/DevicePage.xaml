@@ -49,6 +49,19 @@
         <Button Grid.Column="4" Text="Red/Blue"   Command="{Binding InputCommand}"   
                 
                 CommandParameter="03 01 FF 05 FF 00 00 FF 00 88 FF 00 FF 88 00 FF 00 00 FF"></Button>
+
+      </Grid>
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"></ColumnDefinition>
+          <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Label Text="New"></Label>
+        <Button Grid.Column="2" Text="Off" Command="{Binding InputCommand}"   BackgroundColor="Black"   TextColor="White" CommandParameter="00 00 00 00 00 00 00 00"></Button>
+        <Button Grid.Column="3" Text="Rainbow"  Command="{Binding InputCommand}"  BackgroundColor="Black" TextColor="Blue" CommandParameter="01 00 FF 01 FF 00 FF"></Button>
+
       </Grid>
       
       <!--
@@ -62,6 +75,25 @@
         <Button Grid.Column="1" Text="Write" Command="{Binding WriteCommand}"></Button>-
         <Button Grid.Column="2" Text="{Binding UpdateButtonText}" Command="{Binding ToggleUpdatesCommand}"></Button>
       </Grid>-->
+
+      <ListView ItemsSource="{Binding Services}"
+            SelectedItem="{Binding SelectedService, Mode=TwoWay}"
+            RowHeight="70"
+            SeparatorVisibility="Default"
+            SeparatorColor="Gray"
+            CachingStrategy="RecycleElement">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <ViewCell>
+              <StackLayout Orientation="Vertical" VerticalOptions="Center">
+                <Label Text="{Binding Id, StringFormat='{0}'}" FontSize="Medium" />
+                <Label Text="{Binding Name}" TextColor="Gray" FontSize="Small"/>
+              </StackLayout>
+            </ViewCell>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
+
 
     </StackLayout>
     <ListView Grid.Row="1" ItemsSource="{Binding Messages}" CachingStrategy="RecycleElement" >

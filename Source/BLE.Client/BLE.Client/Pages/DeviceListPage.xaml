@@ -39,7 +39,7 @@
                   </Grid.Triggers>
                   <StackLayout Orientation="Vertical" VerticalOptions="Center">
                     <Label Text="{Binding Name}" FontSize="26" />
-                    <!-- GUID <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/> -->
+                    <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/>
                   </StackLayout>
                   <Label Grid.Column="1"
                          Margin="10"
