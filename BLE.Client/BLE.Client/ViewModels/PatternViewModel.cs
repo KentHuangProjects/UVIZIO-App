@@ -15,6 +15,19 @@ namespace BLE.Client.ViewModels
 {
     public class PatternViewModel : BaseViewModel
     {
+        public static string MODE_OFF = "00";
+        public static string MODE_STATIC = "01";
+        public static string MODE_BLINK = "02";
+        public static string MODE_FADE = "03";
+        public static string MODE_FRAMES = "04";
+        public static string MODE_RAINBOW = "05";
+
+        public static string STATIC_RED =   MODE_STATIC + " 00 00 00 FF 00 00";
+        public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
+        public static string STATIC_BLUE =  MODE_STATIC + " 00 00 00 00 00 FF";
+
+        public static string BLINK_PURPLE = MODE_BLINK  + " 00 FF 01 FF 00 FF";
+        
 
         //the master  items
         public class MasterPageItem
@@ -72,21 +85,17 @@ namespace BLE.Client.ViewModels
             }
         }
 
-        public string StaticRed = "00 00 00 00 FF 00 00";
-        public string StaticGreen = "00 00 00 00 00 FF 00";
-        public string StaticBlue = "00 00 00 00 00 00 FF";
-
-        public string BlinkPurple = "01 00 FF 01 FF 00 FF";
+        
 
         public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
             {
-                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png","00 00 00 00 FF 00 00" ),
+                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           MODE_RAINBOW ),
 
-                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png","00 00 00 00 00 FF 00"),
+                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    BLINK_PURPLE ),
 
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png","00 00 00 00 00 00 FF"),
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      STATIC_BLUE),
 
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png","00 00 00 00 00 00 FF"),
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      STATIC_RED),
             };
         private Mode currentMode { get; set; }
 
@@ -148,7 +157,7 @@ namespace BLE.Client.ViewModels
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
                 var data = GetBytes(commandtext);
 
-                _userDialogs.ShowLoading("Write characteristic value");
+                _userDialogs.ShowLoading("Setting "+commandtext);
                 await Characteristic.WriteAsync(data);
                 _userDialogs.HideLoading();
 
