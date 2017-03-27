@@ -10,17 +10,32 @@ namespace BLE.Client.ViewModels
 {
     public class Mode : INotifyPropertyChanged
     {
-        public string name;
-        public string backgroundImageSrc;
-        public string selectedImageSrc;
+        private string name;
+        private string backgroundImageSrc;
+        private string selectedImageSrc;
+        private string bleWritingText;
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Mode(string name, string backgroundImageSrc, string selectedImageSrc)
+        public Mode(string name, string backgroundImageSrc, string selectedImageSrc,string bleWritingText)
         {
             this.name = name;
             this.backgroundImageSrc = backgroundImageSrc;
             this.selectedImageSrc = selectedImageSrc;
+            this.bleWritingText = bleWritingText;
+        }
+
+        public string BleWritingText
+        {
+            get
+            {
+                return bleWritingText;
+            }
+            set
+            {
+                bleWritingText = value;
+            }
         }
 
         public string Name

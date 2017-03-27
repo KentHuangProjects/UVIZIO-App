@@ -72,15 +72,21 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        public string StaticRed = "00 00 00 00 FF 00 00";
+        public string StaticGreen = "00 00 00 00 00 FF 00";
+        public string StaticBlue = "00 00 00 00 00 00 FF";
+
+        public string BlinkPurple = "01 00 FF 01 FF 00 FF";
+
         public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
             {
-                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png"),
+                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png","00 00 00 00 FF 00 00" ),
 
-                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png"),
+                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png","00 00 00 00 00 FF 00"),
 
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png"),
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png","00 00 00 00 00 00 FF"),
 
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png"),
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png","00 00 00 00 00 00 FF"),
             };
         private Mode currentMode { get; set; }
 
@@ -108,6 +114,8 @@ namespace BLE.Client.ViewModels
                     //call the function to change the icon(selection)
                     Pattern_ItemSelected(value);
 
+                    uvizioWriting(value.BleWritingText);
+
                     RaisePropertyChanged();
                 }
             }
@@ -126,6 +134,32 @@ namespace BLE.Client.ViewModels
                 currentMode = selected;
             }
 
+        }
+        //function to send different modes to BLE device
+        private async void uvizioWriting(string commandtext)
+        {
+            try
+            {
+                //if (_device == null)
+                //{
+                //    Close(this);
+                //}
+                var service = await _device.GetServiceAsync(RFduinoService);
+                Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
+                var data = GetBytes(commandtext);
+
+                _userDialogs.ShowLoading("Write characteristic value");
+                await Characteristic.WriteAsync(data);
+                _userDialogs.HideLoading();
+
+                RaisePropertyChanged(() => CharacteristicValue);
+                
+            }
+            catch (Exception ex)
+            {
+                _userDialogs.HideLoading();
+                _userDialogs.ShowError(ex.Message);
+            }
         }
 
         protected override async void InitFromBundle(IMvxBundle parameters)
@@ -192,11 +226,7 @@ namespace BLE.Client.ViewModels
         // ViewModel
         public string WriteText { get; set; }
 
-        public string StaticRed = "00 00 00 00 FF 00 00";
-        public string StaticGreen = "00 00 00 00 00 FF 00";
-        public string StaticBlue = "00 00 00 00 00 00 FF";
 
-        public string BlinkPurple = "01 00 FF 01 FF 00 FF";
 
         //new MvxCommand
         public MvxCommand<string> InputCommand => new MvxCommand<string>(async param =>
