@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace BLE.Client.Pages
+namespace BLE.Client.ViewModels
 {
-    class Mode : INotifyPropertyChanged
+    public class Mode : INotifyPropertyChanged
     {
-        private string name;
-        private string backgroundImageSrc;
-        private string selectedImageSrc;
+        public string name;
+        public string backgroundImageSrc;
+        public string selectedImageSrc;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

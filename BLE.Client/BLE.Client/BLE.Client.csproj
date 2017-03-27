@@ -60,7 +60,7 @@
     <Compile Include="Pages\DeviceListPage.xaml.cs">
       <DependentUpon>DeviceListPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Mode.cs" />
+    <Compile Include="ViewModels\Mode.cs" />
     <Compile Include="Pages\PatternPage.xaml.cs">
       <DependentUpon>PatternPage.xaml</DependentUpon>
       <SubType>Code</SubType>

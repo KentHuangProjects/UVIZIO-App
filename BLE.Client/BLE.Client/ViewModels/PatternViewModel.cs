@@ -9,6 +9,7 @@ using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using Plugin.BLE.Abstractions.Extensions;
 using System.Collections.Generic;
+using Xamarin.Forms;
 
 namespace BLE.Client.ViewModels
 {
@@ -71,9 +72,60 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
+            {
+                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png"),
+
+                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png"),
+
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png"),
+
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png"),
+            };
+        private Mode currentMode { get; set; }
+
         public PatternViewModel(IAdapter adapter, IUserDialogs userDialogs) : base(adapter)
         {
             _userDialogs = userDialogs;
+            
+
+
+            currentMode = modes.ElementAt(0);
+            
+        }
+
+        //the item to be binded AS:SelectedItem="{Binding selectedMode, Mode=TwoWay}" in listview of patternpage
+        public Mode selectedMode
+        {
+            get
+            {
+                return null;
+            }
+            set
+            {
+                if(value!=null)
+                {
+                    //call the function to change the icon(selection)
+                    Pattern_ItemSelected(value);
+
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+
+
+        private void  Pattern_ItemSelected(Mode selected)
+        {
+
+            if (selected != currentMode)
+            {
+                selected.SelectedImageSrc = "mode_selected_icon.png";
+                currentMode.SelectedImageSrc = "mode_deselected_icon.png";
+
+                currentMode = selected;
+            }
+
         }
 
         protected override async void InitFromBundle(IMvxBundle parameters)
