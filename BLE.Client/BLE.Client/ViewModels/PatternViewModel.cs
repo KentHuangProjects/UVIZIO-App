@@ -10,6 +10,8 @@ using Plugin.BLE.Abstractions.EventArgs;
 using Plugin.BLE.Abstractions.Extensions;
 using System.Collections.Generic;
 using Xamarin.Forms;
+using Plugin.Settings.Abstractions;
+using System.Threading.Tasks;
 
 namespace BLE.Client.ViewModels
 {
@@ -21,14 +23,16 @@ namespace BLE.Client.ViewModels
         public static string MODE_FADE = "03";
         public static string MODE_FRAMES = "04";
         public static string MODE_RAINBOW = "05";
+        public static string MODE_COLOR_STROBE = "06";
+        public static string MODE_COLOR_WALK = "07";
 
         public static string STATIC_RED =   MODE_STATIC + " 00 00 00 FF 00 00";
         public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
         public static string STATIC_BLUE =  MODE_STATIC + " 00 00 00 00 00 FF";
 
         public static string BLINK_PURPLE = MODE_BLINK  + " 00 FF 01 FF 00 FF";
-        
 
+        
         //the master  items
         public class MasterPageItem
         {
@@ -37,6 +41,9 @@ namespace BLE.Client.ViewModels
             //public string IconSource { get; set; }
 
             //public Type TargetType { get; set; }
+
+                
+
         }
 
         public List<MasterPageItem> MenuItems { get; set; } = new List<MasterPageItem>
@@ -61,6 +68,11 @@ namespace BLE.Client.ViewModels
         private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
 
         private IDevice _device;
+
+        private ISettings _settings;
+        private int _speedPct;
+        private int _brightnessPct;
+
 
         private readonly IUserDialogs _userDialogs;
         private bool _updatesStarted;
@@ -91,18 +103,24 @@ namespace BLE.Client.ViewModels
             {
                 new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           MODE_RAINBOW ),
 
-                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    BLINK_PURPLE ),
+                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    MODE_COLOR_STROBE ),
 
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      STATIC_BLUE),
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      MODE_COLOR_WALK),
 
                 new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      STATIC_RED),
             };
         private Mode currentMode { get; set; }
 
-        public PatternViewModel(IAdapter adapter, IUserDialogs userDialogs) : base(adapter)
+
+        
+            public PatternViewModel(IAdapter adapter, IUserDialogs userDialogs, ISettings settings) : base(adapter)
         {
             _userDialogs = userDialogs;
-            
+            _settings = settings;
+
+            _brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
+            int speed = _settings.GetValueOrDefault("speed_pct", 50);
+            _speedPct = speed;
 
 
             currentMode = modes.ElementAt(0);
@@ -153,9 +171,18 @@ namespace BLE.Client.ViewModels
                 //{
                 //    Close(this);
                 //}
+
+                _settings.AddOrUpdateValue("lastcommand", commandtext);
+
                 var service = await _device.GetServiceAsync(RFduinoService);
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
+
                 var data = GetBytes(commandtext);
+
+                int period = (_speedPct) * 1000;
+                data[1] = (byte)period;
+                data[2] = (byte)(period >> 8);
+                
 
                 _userDialogs.ShowLoading("Setting "+commandtext);
                 await Characteristic.WriteAsync(data);
@@ -288,7 +315,44 @@ namespace BLE.Client.ViewModels
 
         private static byte[] GetBytes(string text)
         {
+            while (text.Split(' ').Length < 3)
+                text += " 00";
+
             return text.Split(' ').Where(token => !string.IsNullOrEmpty(token)).Select(token => Convert.ToByte(token, 16)).ToArray();
+        }
+
+
+        
+        public int Speed
+        {
+            get { return _speedPct; }
+            set
+            {
+                //L.Info("PatternViewModel", "Setting speed to "+_speedPct);
+
+                _speedPct = value;
+                _settings.AddOrUpdateValue("speed_pct", _speedPct);
+
+                var last = _settings.GetValueOrDefault<string>("lastcommand", null);
+                if(last != null) uvizioWriting(last);
+
+                RaisePropertyChanged();
+            }
+        }
+
+        public int Brightness
+        {
+            get { return _brightnessPct; }
+            set
+            {
+                _brightnessPct = value;
+                _settings.AddOrUpdateValue("brightness_pct", _brightnessPct);
+
+                var last = _settings.GetValueOrDefault<string>("lastcommand", null);
+                if (last != null) uvizioWriting(last);
+
+                RaisePropertyChanged();
+            }
         }
 
         //public MvxCommand ToggleUpdatesCommand => new MvxCommand((() =>
