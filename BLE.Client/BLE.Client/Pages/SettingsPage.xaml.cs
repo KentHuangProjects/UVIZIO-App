@@ -14,6 +14,9 @@ namespace BLE.Client.Pages
         public SettingsPage()
         {
             InitializeComponent();
+
+            NavigationPage.SetHasBackButton(this, false);
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }

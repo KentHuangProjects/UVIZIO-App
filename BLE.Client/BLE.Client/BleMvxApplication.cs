@@ -7,7 +7,7 @@ namespace BLE.Client
     {
         public override void Initialize()
         {
-            RegisterAppStart<PatternViewModel>();
+            RegisterAppStart<DeviceListViewModel>();
         }
     }
 }

@@ -19,6 +19,42 @@ namespace BLE.Client.ViewModels
     public class DeviceListViewModel : BaseViewModel
     {
 
+        public MasterPageItem SelectMasterItem
+        {
+            get { return null; }
+            set
+            {
+                menuNavigate(value.Title);
+            }
+        }
+
+        protected override async void InitFromBundle(IMvxBundle parameters)
+        {
+            base.InitFromBundle(parameters);
+
+
+
+            _device = GetDeviceFromBundle(parameters);
+
+        }
+            
+
+        private IDevice _device;
+
+        public void menuNavigate(String title)
+        {
+            switch(title)
+            {
+                case "Devices":
+                    break;
+                case "Modes":
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    break;
+                case "Settings":
+                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    break;
+            }
+        }
         //the master  items
         public class MasterPageItem
         {
@@ -42,6 +78,10 @@ namespace BLE.Client.ViewModels
                     Title = "Modes",
                     //IconSource = "todo.png",
                    // TargetType = typeof(TabbedPageModeAndAdjustment)
+                },
+                new MasterPageItem
+                {
+                    Title = "Settings",
                 },
             };
         //the master  items
@@ -100,6 +140,7 @@ namespace BLE.Client.ViewModels
                 {
                     HandleSelectedDevice(value);
                 }
+               
 
                 RaisePropertyChanged();
             }
@@ -124,6 +165,8 @@ namespace BLE.Client.ViewModels
             Adapter.DeviceDisconnected += OnDeviceDisconnected;
             Adapter.DeviceConnectionLost += OnDeviceConnectionLost;
         }
+
+
 
         private Task GetPreviousGuidAsync()
         {
@@ -208,7 +251,7 @@ namespace BLE.Client.ViewModels
             base.Resume();
 
             await GetPreviousGuidAsync();
-            //TryStartScanning();
+            TryStartScanning();
 
             GetSystemConnectedOrPairedDevices();
 

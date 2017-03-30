@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Acr.UserDialogs;
-using MvvmCross.Core.ViewModels;
-using Plugin.BLE.Abstractions;
-using Plugin.BLE.Abstractions.Contracts;
-using Plugin.BLE.Abstractions.EventArgs;
-using Plugin.BLE.Abstractions.Extensions;
-using System.Collections.Generic;
-using Xamarin.Forms;
-using Plugin.Settings.Abstractions;
 using System.Threading.Tasks;
+using Plugin.BLE.Abstractions.Contracts;
+using Acr.UserDialogs;
+using System.Collections.ObjectModel;
+using Plugin.Settings.Abstractions;
+using Plugin.BLE.Abstractions.Extensions;
+using MvvmCross.Core.ViewModels;
 
 namespace BLE.Client.ViewModels
 {
-    public class PatternViewModel : BaseViewModel
+    public class SettingsViewModel : BaseViewModel
     {
         public static string MODE_OFF = "00";
         public static string MODE_STATIC = "01";
@@ -26,13 +23,11 @@ namespace BLE.Client.ViewModels
         public static string MODE_COLOR_STROBE = "06";
         public static string MODE_COLOR_WALK = "07";
 
-        public static string STATIC_RED =   MODE_STATIC + " 00 00 00 FF 00 00";
+        public static string STATIC_RED = MODE_STATIC + " 00 00 00 FF 00 00";
         public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
-        public static string STATIC_BLUE =  MODE_STATIC + " 00 00 00 00 00 FF";
+        public static string STATIC_BLUE = MODE_STATIC + " 00 00 00 00 00 FF";
 
-        public static string BLINK_PURPLE = MODE_BLINK  + " 00 FF 01 FF 00 FF";
-
-        private IAdapter adapter_;
+        public static string BLINK_PURPLE = MODE_BLINK + " 00 FF 01 FF 00 FF";
 
         public MasterPageItem SelectMasterItem
         {
@@ -43,13 +38,6 @@ namespace BLE.Client.ViewModels
             }
         }
 
-        private bool isConnect =true;
-
-        private void lostConnect(object sender, DeviceErrorEventArgs e)
-        {
-            isConnect = false;
-        }
-
         public void menuNavigate(String title)
         {
             switch (title)
@@ -58,10 +46,10 @@ namespace BLE.Client.ViewModels
                     ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
                     break;
                 case "Modes":
-                                          
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
                     break;
                 case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    
                     break;
             }
         }
@@ -76,7 +64,7 @@ namespace BLE.Client.ViewModels
 
             //public Type TargetType { get; set; }
 
-                
+
 
         }
 
@@ -135,39 +123,35 @@ namespace BLE.Client.ViewModels
             }
         }
 
-        
 
-        public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
+
+        public ObservableCollection<Mode> modes { get; set; } = new ObservableCollection<Mode>
             {
                 new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           MODE_RAINBOW ),
 
                 new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    MODE_COLOR_STROBE ),
 
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      STATIC_BLUE),
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      MODE_COLOR_WALK),
 
                 new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      STATIC_RED),
             };
         private Mode currentMode { get; set; }
 
 
-        
-            public PatternViewModel(IAdapter adapter, IUserDialogs userDialogs, ISettings settings) : base(adapter)
+
+        public SettingsViewModel(IAdapter adapter, IUserDialogs userDialogs, ISettings settings) : base(adapter)
         {
             _userDialogs = userDialogs;
             _settings = settings;
-            adapter_ = adapter;
 
             _brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
             int speed = _settings.GetValueOrDefault("speed_pct", 50);
             _speedPct = speed;
-            adapter_.DeviceConnectionLost += lostConnect;
 
 
             currentMode = modes.ElementAt(0);
-            
-        }
 
-        
+        }
 
         //the item to be binded AS:SelectedItem="{Binding selectedMode, Mode=TwoWay}" in listview of patternpage
         public Mode selectedMode
@@ -178,7 +162,7 @@ namespace BLE.Client.ViewModels
             }
             set
             {
-                if(value!=null)
+                if (value != null)
                 {
                     //call the function to change the icon(selection)
                     Pattern_ItemSelected(value);
@@ -192,7 +176,7 @@ namespace BLE.Client.ViewModels
 
 
 
-        private void  Pattern_ItemSelected(Mode selected)
+        private void Pattern_ItemSelected(Mode selected)
         {
 
             if (selected != currentMode)
@@ -216,8 +200,6 @@ namespace BLE.Client.ViewModels
 
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
 
-
-
                 var service = await _device.GetServiceAsync(RFduinoService);
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
 
@@ -226,14 +208,14 @@ namespace BLE.Client.ViewModels
                 int period = (_speedPct) * 1000;
                 data[1] = (byte)period;
                 data[2] = (byte)(period >> 8);
-                
 
-                _userDialogs.ShowLoading("Setting "+commandtext);
+
+                _userDialogs.ShowLoading("Setting " + commandtext);
                 await Characteristic.WriteAsync(data);
                 _userDialogs.HideLoading();
 
                 RaisePropertyChanged(() => CharacteristicValue);
-                
+
             }
             catch (Exception ex)
             {
@@ -245,8 +227,6 @@ namespace BLE.Client.ViewModels
         protected override async void InitFromBundle(IMvxBundle parameters)
         {
             base.InitFromBundle(parameters);
-
-
 
             _device = GetDeviceFromBundle(parameters);
 
@@ -368,7 +348,7 @@ namespace BLE.Client.ViewModels
         }
 
 
-        
+
         public int Speed
         {
             get { return _speedPct; }
@@ -380,7 +360,7 @@ namespace BLE.Client.ViewModels
                 _settings.AddOrUpdateValue("speed_pct", _speedPct);
 
                 var last = _settings.GetValueOrDefault<string>("lastcommand", null);
-                if(last != null) uvizioWriting(last);
+                if (last != null) uvizioWriting(last);
 
                 RaisePropertyChanged();
             }

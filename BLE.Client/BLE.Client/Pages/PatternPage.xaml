@@ -26,7 +26,7 @@
 
             <ContentPage.Content>
                 <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
-                    <ListView x:Name="listView" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+                    <ListView x:Name="listView" SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
 
                     </ListView>
                 </StackLayout>
@@ -42,7 +42,7 @@
                 <pages:BasePage
                                         Title="Patterns">
                     <StackLayout>
-                        <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
+                        <ListView x:Name="ModeList"  ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
 
                             <ListView.ItemTemplate>
                                 <DataTemplate>

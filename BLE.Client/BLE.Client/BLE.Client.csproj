@@ -45,18 +45,6 @@
     <Compile Include="Pages\BaseMasterDetailPage.cs" />
     <Compile Include="Pages\BasePage.cs" />
     <Compile Include="Pages\BaseTabbedPage.cs" />
-    <Compile Include="Pages\CharacteristicDetailPage.xaml.cs">
-      <DependentUpon>CharacteristicDetailPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CharacteristicListPage.xaml.cs">
-      <DependentUpon>CharacteristicListPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DescriptorDetailPage.xaml.cs">
-      <DependentUpon>DescriptorDetailPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DescriptorListPage.xaml.cs">
-      <DependentUpon>DescriptorListPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\DeviceListPage.xaml.cs">
       <DependentUpon>DeviceListPage.xaml</DependentUpon>
     </Compile>
@@ -68,20 +56,12 @@
       <DependentUpon>PatternPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Pages\ServiceListPage.xaml.cs">
-      <DependentUpon>ServiceListPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
-    <Compile Include="ViewModels\CharacteristicDetailViewModel.cs" />
-    <Compile Include="ViewModels\CharacteristicListViewModel.cs" />
-    <Compile Include="ViewModels\DescriptorDetailViewModel.cs" />
-    <Compile Include="ViewModels\DescriptorListViewModel.cs" />
-    <Compile Include="ViewModels\DeviceListItemViewModel.cs" />
+    <Compile Include="DeviceListItemViewModel.cs" />
     <Compile Include="ViewModels\PatternViewModel.cs" />
-    <Compile Include="ViewModels\ServiceListViewModel.cs" />
     <Compile Include="ViewModels\DeviceListViewModel.cs" />
-    <Compile Include="ViewModels\SettingsPageViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Acr.UserDialogs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -155,31 +135,11 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Pages\ServiceListPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="Pages\PatternPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Pages\DeviceListPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Pages\DescriptorListPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Pages\DescriptorDetailPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Pages\CharacteristicListPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Pages\CharacteristicDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

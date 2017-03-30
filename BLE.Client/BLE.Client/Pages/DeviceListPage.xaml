@@ -26,7 +26,7 @@
 
             <ContentPage.Content>
                 <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
-                    <ListView x:Name="listView" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+                    <ListView x:Name="listView" SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
 
                     </ListView>
                 </StackLayout>
@@ -50,7 +50,8 @@
                                                   Text="Disconnect"/>
                                         <MenuItem Command="{Binding Path=BindingContext.ConnectCommand, Source={x:Reference DevicePage}}"
                                                   CommandParameter="{Binding .}"
-                                                  Text="View Services"/>
+                                                  Text="View 
+                                                  s"/>
                                         <MenuItem Command="{Binding Path=BindingContext.CopyGuidCommand, Source={x:Reference DevicePage}}"
                                                   CommandParameter="{Binding .}"
                                                   Text="Copy Guid"/>
