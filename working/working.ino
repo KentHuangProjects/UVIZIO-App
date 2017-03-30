@@ -23,7 +23,7 @@
 #define MODE_COLOR_STROBE 6
 #define MODE_COLOR_WALK 7
 
-#define MIN_PERIOD 100  // Min period (ms) to cycle on
+#define MIN_SPEED  10  // Min period (ms) to cycle on
 #define MAX_FRAMES 10   // Max # of Frames we can handle
 
 
@@ -48,7 +48,8 @@ struct Pixel {
 
 struct Data {
   uint8_t mode;
-  int period;
+  uint8_t speed;
+  uint8_t brightness;
   int num_pixels;
   Pixel pixels[MAX_FRAMES];
 };
@@ -60,7 +61,7 @@ const Pixel PIXEL_ON  = PIXEL_WHITE;
 
 // Defaults
 //uint8_t MODE = MODE_RAINBOW;
-const Data DEFAULT_DATA = {MODE_RAINBOW, MIN_PERIOD, 1, {PIXEL_ON} };
+const Data DEFAULT_DATA = {MODE_RAINBOW, MIN_SPEED, 255 };
 
 Data DATA = {MODE_OFF}; 
 
@@ -107,10 +108,13 @@ void RFduinoBLE_onReceive(char *data, int len) {
 
   // get the speed values
   DATA.mode = data[0];
-  DATA.period = (data[1] * 256) + data[2];
-  DATA.period = (DATA.period < MIN_PERIOD) ? MIN_PERIOD : DATA.period;
+  //DATA.period = (data[1] * 256) + data[2];
+  //DATA.period = (DATA.period < MIN_PERIOD) ? MIN_PERIOD : DATA.period;
   
-  DATA.num_pixels = (data[3] < 1 ? 1 : data[3]);
+  //DATA.num_pixels = (data[3] < 1 ? 1 : data[3]);
+
+  DATA.speed = data[1];
+  DATA.brightness = data[2];
 
   //Pixel pixels[MAX_FRAMES];
 
@@ -126,7 +130,6 @@ void RFduinoBLE_onReceive(char *data, int len) {
     uint8_t b = data[color_start+2];
 
     DATA.pixels[i] = {r,g,b};
-
   }
 }
 
@@ -138,10 +141,10 @@ void loop() {
   switch(DATA.mode) {
     case MODE_OFF           : off(1000); break;
     case MODE_STATIC        : displayStatic(DATA.pixels[0], 1000); break;
-    case MODE_BLINK         : displayBlink(DATA.pixels[0], DATA.period); break;
-    case MODE_RAINBOW       : rainbow(DATA.period); break;
-    case MODE_COLOR_STROBE  : colorStrobe(DATA.period); break;
-    case MODE_COLOR_WALK    : colorWalk(DATA.period); break;
+    case MODE_BLINK         : displayBlink(DATA.pixels[0], ((255-DATA.speed)/2)); break;
+    case MODE_RAINBOW       : rainbow(255-DATA.speed); break;
+    case MODE_COLOR_STROBE  : colorStrobe(255-DATA.speed); break;
+    case MODE_COLOR_WALK    : colorWalk(255-DATA.speed); break;
     default                 : off(5000); break;
   }
   // rainbow(50);
@@ -220,6 +223,7 @@ void rainbow(uint8_t wait) {
       Serial.println("exiting early! mode has changed.");
       return;
     }
+    wait = 255-DATA.speed;
     
     staticRainbow(j);      
     
@@ -241,6 +245,7 @@ void colorStrobe(uint8_t wait) {
         Serial.println("exiting early! mode has changed.");
         return;
       }
+      wait = 255-DATA.speed;
 
       if( (j/25) % 2 == 0 ) {
         off(wait*2);
@@ -264,6 +269,7 @@ void colorWalk(uint8_t wait) {
         Serial.println("exiting early! mode has changed.");
         return;
       }
+      wait = 255-DATA.speed;
 
       if( (j/spacer) % 2 == 0 ) {
         // continue;

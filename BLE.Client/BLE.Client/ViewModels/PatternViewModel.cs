@@ -25,6 +25,7 @@ namespace BLE.Client.ViewModels
         public static string MODE_RAINBOW = "05";
         public static string MODE_COLOR_STROBE = "06";
         public static string MODE_COLOR_WALK = "07";
+        public static string MODE_FIRE_PIXEL = "08";
 
         public static string STATIC_RED =   MODE_STATIC + " 00 00 00 FF 00 00";
         public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
@@ -70,8 +71,8 @@ namespace BLE.Client.ViewModels
         private IDevice _device;
 
         private ISettings _settings;
-        private int _speedPct;
-        private int _brightnessPct;
+        private int _speedPct = 200;
+        private int _brightnessPct = 250;
 
 
         private readonly IUserDialogs _userDialogs;
@@ -107,7 +108,7 @@ namespace BLE.Client.ViewModels
 
                 new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      MODE_COLOR_WALK),
 
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      STATIC_RED),
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      MODE_FIRE_PIXEL),
             };
         private Mode currentMode { get; set; }
 
@@ -118,9 +119,9 @@ namespace BLE.Client.ViewModels
             _userDialogs = userDialogs;
             _settings = settings;
 
-            _brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
-            int speed = _settings.GetValueOrDefault("speed_pct", 50);
-            _speedPct = speed;
+            //_brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
+            //int speed = _settings.GetValueOrDefault("speed_pct", 50);
+            //_speedPct = speed;
 
 
             currentMode = modes.ElementAt(0);
@@ -179,10 +180,15 @@ namespace BLE.Client.ViewModels
 
                 var data = GetBytes(commandtext);
 
+                /*
                 int period = (_speedPct) * 1000;
                 data[1] = (byte)period;
                 data[2] = (byte)(period >> 8);
-                
+                */
+
+                data[1] = (byte)_speedPct;
+                data[2] = (byte)_brightnessPct;
+
 
                 _userDialogs.ShowLoading("Setting "+commandtext);
                 await Characteristic.WriteAsync(data);
@@ -354,6 +360,7 @@ namespace BLE.Client.ViewModels
                 RaisePropertyChanged();
             }
         }
+
 
         //public MvxCommand ToggleUpdatesCommand => new MvxCommand((() =>
         //{
