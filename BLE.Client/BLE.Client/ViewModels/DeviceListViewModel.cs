@@ -251,7 +251,7 @@ namespace BLE.Client.ViewModels
             base.Resume();
 
             await GetPreviousGuidAsync();
-            TryStartScanning();
+            //TryStartScanning();
 
             GetSystemConnectedOrPairedDevices();
 
