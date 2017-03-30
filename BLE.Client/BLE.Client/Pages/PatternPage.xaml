@@ -39,69 +39,46 @@
     <MasterDetailPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <pages:BaseTabbedPage 
-                                Title="Patterns">
-                    <!--Pages can be added as references or inline-->
-                    <pages:BaseTabbedPage.Children>
-
-                        <pages:BasePage
+                <pages:BasePage
                                         Title="Patterns">
-                            <StackLayout>
-                                <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
+                    <StackLayout>
+                        <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
 
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <ViewCell>
-                                                <!--<RelativeLayout>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <!--<RelativeLayout>
                                                     <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
                                                     <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
                                                 </RelativeLayout>-->
 
-                                                <Grid BackgroundColor="Black">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*" />
-                                                        <RowDefinition Height="*" />
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="8*" />
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
+                                        <Grid BackgroundColor="Black">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="8*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
-                                                    <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
-                                                    <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                                            <Image Source="{Binding BackgroundImageSrc}" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
+                                            <Image Source="bg_overlay.png" Aspect="AspectFill" Grid.RowSpan="2" Grid.ColumnSpan="4" />
 
-                                                    <Label TextColor="White" Text="{Binding Name}" Margin="15" FontSize="Medium" Grid.Row="1" Grid.Column="0" />
-                                                    <Image Source="brightness_icon.png" Margin="5" Grid.Row="1" Grid.Column="1" />
-                                                    <Image Source="{Binding SelectedImageSrc}" Margin="8" Grid.Row="1" Grid.Column="2" />
-                                                </Grid>
+                                            <Label TextColor="White" Text="{Binding Name}" Margin="15" FontSize="Medium" Grid.Row="1" Grid.Column="0" />
+                                            <Image Source="brightness_icon.png" Margin="5" Grid.Row="1" Grid.Column="1" />
+                                            <Image Source="{Binding SelectedImageSrc}" Margin="8" Grid.Row="1" Grid.Column="2" />
+                                        </Grid>
 
-                                            </ViewCell>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
 
-                                </ListView >
-                            </StackLayout>
-                        </pages:BasePage>
-
-                        <ContentPage Title="Settings">
-                            <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="StartAndExpand">
-
-                                <Slider x:Name="Speed" Minimum="0" Maximum="100" />
-                                <Label HorizontalOptions="Center" Text="Speed" />
-
-                                <BoxView HeightRequest="20"  />
-
-
-                                <Slider x:Name="Brightness" Minimum="0" Maximum="100" />
-                                <Label HorizontalOptions="Center" Text="Brightness" />
-                            </StackLayout>
-                        </ContentPage>
-
-                        </pages:BaseTabbedPage.Children>
-
-                </pages:BaseTabbedPage>
+                        </ListView >
+                    </StackLayout>
+                </pages:BasePage>
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>

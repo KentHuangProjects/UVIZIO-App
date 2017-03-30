@@ -86,7 +86,7 @@ namespace BLE.Client.ViewModels
 
                 new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png","00 00 00 00 00 00 FF"),
 
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png","00 00 00 00 00 00 FF"),
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png","01 00 FF 01 FF 00 FF"),
             };
         private Mode currentMode { get; set; }
 

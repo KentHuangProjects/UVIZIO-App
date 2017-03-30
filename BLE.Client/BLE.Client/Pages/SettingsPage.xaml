@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseMasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BLE.Client.Pages.SettingsPage"
+             xmlns:pages="clr-namespace:BLE.Client.Pages;assembly=BLE.Client"
+             
+             Title="Settings"
+             x:Name="SettingsPage">
+    <MasterDetailPage.Master>
+        <ContentPage Title="Menu" BackgroundColor="Black"
+             BackgroundImage="menu_bg.png">
+
+
+            <ContentPage.Resources>
+                <ResourceDictionary>
+                    <DataTemplate x:Key="MenuItemTemplate">
+                        <ViewCell>
+
+
+                            <Label Text="{Binding Title}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+
+
+                        </ViewCell>
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ContentPage.Resources>
+
+            <ContentPage.Content>
+                <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
+                    <ListView x:Name="listView" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+
+                    </ListView>
+                </StackLayout>
+
+            </ContentPage.Content>
+        </ContentPage>
+    </MasterDetailPage.Master>
+
+    <MasterDetailPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <pages:BasePage Title="Settings">
+                    <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="StartAndExpand">
+
+                        <Slider x:Name="Speed" Minimum="0" Maximum="100" />
+                        <Label HorizontalOptions="Center" Text="Speed" />
+
+                        <BoxView HeightRequest="20"  />
+
+
+                        <Slider x:Name="Brightness" Minimum="0" Maximum="100" />
+                        <Label HorizontalOptions="Center" Text="Brightness" />
+                    </StackLayout>
+                </pages:BasePage>
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+</pages:BaseMasterDetailPage>
