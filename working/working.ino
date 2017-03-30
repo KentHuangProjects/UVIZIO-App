@@ -8,10 +8,27 @@
 
 #include <RFduinoBLE.h> //RFduino support
 
-#define MODE_OFF 0
-#define MODE_RAINBOW 1
+#define PIN_GREEN 0
+#define PIN_RED   1
+#define PIN_BLUE  2
+
+#define MODE_OFF    0
+#define MODE_STATIC 1   // Display a static color.
+#define MODE_BLINK  2   // Blink a color on/off at the specified period (ms)
+#define MODE_FADE   3   // Like blink, but fade instead. Not yet working. MODE_FRAMES can handle this by defining fade "between" frames.
+#define MODE_FRAMES 4   // Ability to define frames of pixels to loop between. 
+                        // Loops the whole pattern by the period, and frames are equally divided between the period's time.
+
+#define MODE_RAINBOW 5
+#define MODE_COLOR_STROBE 6
+#define MODE_COLOR_WALK 7
+
+#define MIN_PERIOD 100  // Min period (ms) to cycle on
+#define MAX_FRAMES 10   // Max # of Frames we can handle
 
 
+
+// RFDuino output settings
 const int ws2812pin = 3;
 
 const int nPIXELS = 60;
@@ -19,27 +36,41 @@ const int nPIXELS = 60;
 const int nLEDs = nPIXELS * 3;
 uint8_t ledBar[nLEDs];
 
-uint8_t MODE = MODE_RAINBOW;
+bool ADVERTISING = false;
 
-void RFduinoBLE_onConnect() {
-  Serial.println("Connected ");
-}
-
-void RFduinoBLE_onReceive(char *data, int len) {
-  // each transmission should contain an RGB triple
-
-  Serial.println("Received "+String(data));
-
-  MODE = data[0];
- 
+// Defines
+struct Pixel {
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
   
-  
-}
+};
+
+struct Data {
+  uint8_t mode;
+  int period;
+  int num_pixels;
+  Pixel pixels[MAX_FRAMES];
+};
+
+const Pixel PIXEL_WHITE = {255, 255, 255};
+const Pixel PIXEL_BLACK = {0, 0, 0};
+const Pixel PIXEL_OFF = PIXEL_BLACK;
+const Pixel PIXEL_ON  = PIXEL_WHITE;
+
+// Defaults
+//uint8_t MODE = MODE_RAINBOW;
+const Data DEFAULT_DATA = {MODE_RAINBOW, MIN_PERIOD, 1, {PIXEL_ON} };
+
+Data DATA = {MODE_OFF}; 
+
+
+
 
 void setup() {
 
-RFduinoBLE.deviceName = "PixelPusher"; //Sets the device name to RFduino
-  RFduinoBLE.advertisementInterval = 2000; 
+  RFduinoBLE.deviceName = "PixelPusher"; //Sets the device name to RFduino
+  RFduinoBLE.advertisementInterval = 100; 
   RFduinoBLE.advertisementData = "leds";
 
   RFduinoBLE.customUUID = "aba8a706-f28c-11e6-bc64-92361f002671";
@@ -61,49 +92,85 @@ RFduinoBLE.deviceName = "PixelPusher"; //Sets the device name to RFduino
   delay(1);
 }
 
+
+
+
+void RFduinoBLE_onConnect() {
+  Serial.println("Connected ");
+  DATA = DEFAULT_DATA;
+}
+
+void RFduinoBLE_onReceive(char *data, int len) {
+
+  Serial.println(data);
+ 
+
+  // get the speed values
+  DATA.mode = data[0];
+  DATA.period = (data[1] * 256) + data[2];
+  DATA.period = (DATA.period < MIN_PERIOD) ? MIN_PERIOD : DATA.period;
+  
+  DATA.num_pixels = (data[3] < 1 ? 1 : data[3]);
+
+  //Pixel pixels[MAX_FRAMES];
+
+  int base = 4;
+  for(int i=0; i<DATA.num_pixels; i++)
+  {
+    // get the RGB values
+
+    int color_start = base + (i*3);
+    
+    uint8_t r = data[color_start];
+    uint8_t g = data[color_start+1];
+    uint8_t b = data[color_start+2];
+
+    DATA.pixels[i] = {r,g,b};
+
+  }
+}
+
+
+
 void loop() {
 
-  Serial.println("loop() begin.");
-    
-// for(int wsOut = 0; wsOut < nLEDs; wsOut+=3){ // green
-//    ledBar[wsOut] = 0x3c;
-//    loadWS2812();
-//    
-//    delay(10);
-//    
-//    ledBar[wsOut] = 0x00;
-//    loadWS2812();
-//  }
-//
-// for(int wsOut = 1; wsOut < nLEDs; wsOut+=3){ // red
-//    ledBar[wsOut] = 0x3c;
-//    loadWS2812();
-//    
-//    delay(10);
-//    
-//    ledBar[wsOut] = 0x00;
-//    loadWS2812();
-//  }
-//  
-//   for(int wsOut = 2; wsOut < nLEDs; wsOut+=3){ // blue
-//    ledBar[wsOut] = 0x3c;
-//    loadWS2812();
-//    
-//    delay(10);
-//    
-//    ledBar[wsOut] = 0x00;
-//    loadWS2812();
-//  }
 
-  switch(MODE) {
-    case MODE_OFF     : off(5000); break;
-    case MODE_RAINBOW : rainbow(50); break;
+  switch(DATA.mode) {
+    case MODE_OFF           : off(1000); break;
+    case MODE_STATIC        : displayStatic(DATA.pixels[0], 1000); break;
+    case MODE_BLINK         : displayBlink(DATA.pixels[0], DATA.period); break;
+    case MODE_RAINBOW       : rainbow(DATA.period); break;
+    case MODE_COLOR_STROBE  : colorStrobe(DATA.period); break;
+    case MODE_COLOR_WALK    : colorWalk(DATA.period); break;
+    default                 : off(5000); break;
   }
   // rainbow(50);
   //delay(50);
 
-
+  
 }
+
+void displayStatic(Pixel p, uint8_t wait) {
+  for(int wsOut = 0; wsOut < nLEDs; ++wsOut){
+    if(wsOut % 3 == PIN_RED)        ledBar[wsOut] = p.r;
+    else if(wsOut % 3 == PIN_GREEN) ledBar[wsOut] = p.g;
+    else if(wsOut % 3 == PIN_BLUE)  ledBar[wsOut] = p.b;
+  }
+
+  if(wait > -1) {
+    loadWS2812();
+    delay(wait);
+  }
+}
+
+
+void displayBlink(Pixel p, uint8_t wait) {
+
+  displayStatic(p, wait/2);
+  displayStatic(PIXEL_OFF, wait/2);
+  
+}
+
 
 void off(uint8_t wait) {
   for(int i=0; i<nLEDs; ++i) {
@@ -113,63 +180,118 @@ void off(uint8_t wait) {
   delay(wait);
 }
 
+void staticRainbow(uint8_t j) {
+
+  for(uint8_t i = 0; i < nLEDs; i+=3) {
+  
+    int WheelPos = ((i+j)/1)%256;
+  
+    if(WheelPos < 85) {
+      ledBar[i] = WheelPos * 3;
+      ledBar[i+1] = 255 - WheelPos * 3;
+      ledBar[i+2] = 0;
+    } else if(WheelPos < 170) {
+      WheelPos -= 85;
+      ledBar[i] = 255 - WheelPos * 3;
+      ledBar[i+1] = 0;
+      ledBar[i+2] = WheelPos * 3;
+    } else {
+     WheelPos -= 170;
+      ledBar[i] = 0;
+      ledBar[i+1] = WheelPos * 3;
+      ledBar[i+2] = 255 - WheelPos * 3;
+    }
+
+  }
+
+}
+
 void rainbow(uint8_t wait) {
 
   String waitString = String(wait);
   Serial.println("rainbow("+waitString+") begin.");
   
 
-  //RFduinoBLE.end();
+ // RFduinoBLE.end();
   uint16_t i, j;
 
-  for(j=0; j<256; j++) {  // for each color?
-    if(MODE != MODE_RAINBOW) return;
-    while (RFduinoBLE.radioActive);
-    //Serial.println("running for Color "+String(j));
-    for(i=0; i<nLEDs; i+=3) { // for each addressable LED
-
-      
-//      (RFduinoBLE.radioActive);
- //   uint32_t aColor = Wheel((i+j) & 255);
-
-      int WheelPos = ((i+j)/1)%255;
+  for(j=0; j<256; j+=2) {  // for each color?
+    if(DATA.mode != MODE_RAINBOW) {
+      Serial.println("exiting early! mode has changed.");
+      return;
+    }
     
-      if(WheelPos < 85) {
-        ledBar[i] = WheelPos * 3;
-        ledBar[i+1] = 255 - WheelPos * 3;
-        ledBar[i+2] = 0;
-      } else if(WheelPos < 170) {
-        WheelPos -= 85;
-        ledBar[i] = 255 - WheelPos * 3;
-        ledBar[i+1] = 0;
-        ledBar[i+2] = WheelPos * 3;
-      } else {
-       WheelPos -= 170;
-        ledBar[i] = 0;
-        ledBar[i+1] = WheelPos * 3;
-        ledBar[i+2] = 255 - WheelPos * 3;
-      }
-
+    staticRainbow(j);      
     
-//    ledBar[i] = 0x3c;
-//    ledBar[i+1] = 0x3c;
-//    ledBar[i+2] = 0x3c;
-    
-      //strip.setPixelColor(i, Wheel((i+j) & 255));
-    
-    
-    } // end loop for each LED
-
-//    while(!RFduinoBLE.radioActive);
-//    while(RFduinoBLE.radioActive);
-
     loadWS2812(); // update LEDs
-    //RFduinoBLE.begin();
-    //RFduinoBLE.begin();
+    
     delay(wait);
   } // end loop for each color
-  
+
+  //RFduinoBLE.begin();
 }
+
+
+void colorStrobe(uint8_t wait) {
+
+    uint16_t i, j;
+
+    for(j=0; j<256; j += 8) {  // for each color?
+      if(DATA.mode != MODE_COLOR_STROBE) {
+        Serial.println("exiting early! mode has changed.");
+        return;
+      }
+
+      if( (j/25) % 2 == 0 ) {
+        off(wait*2);
+      } else {
+        staticRainbow(j);      
+        loadWS2812(); // update LEDs
+        delay(wait*2);  
+      }
+      
+    } // end loop for each color
+}
+
+void colorWalk(uint8_t wait) {
+
+    uint16_t i, j;
+
+    int spacer = 16;
+
+    for(j=0; j<256; j += spacer) {  // for each color?
+      if(DATA.mode != MODE_COLOR_WALK) {
+        Serial.println("exiting early! mode has changed.");
+        return;
+      }
+
+      if( (j/spacer) % 2 == 0 ) {
+        // continue;
+        //off(wait*2);
+      } else {
+        
+          int WheelPos = j;
+          
+          if(WheelPos < 85) {
+            displayStatic({WheelPos * 3, 255 - WheelPos * 3, 0}, -1);
+          } else if(WheelPos < 170) {
+            WheelPos -= 85;
+            displayStatic({255 - WheelPos * 3, 0, WheelPos * 3}, -1);
+          } else {
+           WheelPos -= 170;
+            displayStatic({0, WheelPos * 3, 255 - WheelPos * 3}, -1);
+          }
+      
+        
+
+        
+      }
+      loadWS2812(); // update LEDs
+      delay(wait*(spacer/2));  
+      
+    } // end loop for each color
+}
+
 
 void loadWS2812(){
 
@@ -177,11 +299,22 @@ void loadWS2812(){
 
 
   //RFduinoBLE.end();
-  // while(RFduinoBLE.radioActive);
-  noInterrupts();
+  while(!RFduinoBLE.radioActive);
+  while(RFduinoBLE.radioActive);
+  
+  //noInterrupts();
+  //RFduino_ULPDelay(INFINITE);
 
   for(int wsOut = 0; wsOut < nLEDs; wsOut++){
     for(int x=7; x>=0; x--){
+      if(RFduinoBLE_radioActive) {
+     //   delay(10);
+      //  Serial.println("skipping LED "+String(wsOut)+" for advertisement");
+      //  x = 0;
+       // continue;
+      }
+     // Serial.println("display LED"+String(wsOut));
+      
       NRF_GPIO->OUTSET = (1UL << ws2812pin);
       if(ledBar[wsOut] & (0x01 << x)) {
         __ASM ( \
@@ -211,8 +344,10 @@ void loadWS2812(){
       }
     }
   }
-  delayMicroseconds(2); // latch and reset WS2812.
-  interrupts();  
+  //RFduinoBLE.begin();
+  //interrupts();
+  //delayMicroseconds(2); // latch and reset WS2812.
+  //interrupts();  
   //RFduinoBLE.begin();
 }
 

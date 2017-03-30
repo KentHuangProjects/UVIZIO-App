@@ -39,7 +39,7 @@ namespace BLE.Client.ViewModels
 
         private string GetConnectionImageString(int Rssi)
         {
-            int imgId = (Rssi+100) / 25;
+            int imgId = (Rssi+150) / 25;
             if (imgId < 0) imgId = 0;
             if (imgId > 4) imgId = 4;
 
