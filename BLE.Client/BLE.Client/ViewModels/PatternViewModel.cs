@@ -25,6 +25,7 @@ namespace BLE.Client.ViewModels
         public static string MODE_RAINBOW = "05";
         public static string MODE_COLOR_STROBE = "06";
         public static string MODE_COLOR_WALK = "07";
+        public static string MODE_FIRE_PIXEL = "08";
 
         public static string STATIC_RED =   MODE_STATIC + " 00 00 00 FF 00 00";
         public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
@@ -32,41 +33,7 @@ namespace BLE.Client.ViewModels
 
         public static string BLINK_PURPLE = MODE_BLINK  + " 00 FF 01 FF 00 FF";
 
-        private IAdapter adapter_;
-
-        public MasterPageItem SelectMasterItem
-        {
-            get { return null; }
-            set
-            {
-                menuNavigate(value.Title);
-            }
-        }
-
-        private bool isConnect =true;
-
-        private void lostConnect(object sender, DeviceErrorEventArgs e)
-        {
-            isConnect = false;
-        }
-
-        public void menuNavigate(String title)
-        {
-            switch (title)
-            {
-                case "Devices":
-                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
-                    break;
-                case "Modes":
-                                          
-                    break;
-                case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
-                    break;
-            }
-        }
-
-
+        
         //the master  items
         public class MasterPageItem
         {
@@ -94,10 +61,6 @@ namespace BLE.Client.ViewModels
                     //IconSource = "todo.png",
                    // TargetType = typeof(TabbedPageModeAndAdjustment)
                 },
-                new MasterPageItem
-                {
-                    Title = "Settings",
-                },
             };
         //the master  items
 
@@ -108,8 +71,8 @@ namespace BLE.Client.ViewModels
         private IDevice _device;
 
         private ISettings _settings;
-        private int _speedPct;
-        private int _brightnessPct;
+        private int _speedPct = 200;            // out of 255 not 100 
+        private int _brightnessPct = 250;
 
 
         private readonly IUserDialogs _userDialogs;
@@ -143,9 +106,9 @@ namespace BLE.Client.ViewModels
 
                 new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    MODE_COLOR_STROBE ),
 
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      STATIC_BLUE),
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      MODE_COLOR_WALK),
 
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      STATIC_RED),
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      MODE_FIRE_PIXEL),
             };
         private Mode currentMode { get; set; }
 
@@ -155,19 +118,15 @@ namespace BLE.Client.ViewModels
         {
             _userDialogs = userDialogs;
             _settings = settings;
-            adapter_ = adapter;
 
-            _brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
-            int speed = _settings.GetValueOrDefault("speed_pct", 50);
-            _speedPct = speed;
-            adapter_.DeviceConnectionLost += lostConnect;
+            //_brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
+            //int speed = _settings.GetValueOrDefault("speed_pct", 50);
+            //_speedPct = speed;
 
 
             currentMode = modes.ElementAt(0);
             
         }
-
-        
 
         //the item to be binded AS:SelectedItem="{Binding selectedMode, Mode=TwoWay}" in listview of patternpage
         public Mode selectedMode
@@ -178,7 +137,7 @@ namespace BLE.Client.ViewModels
             }
             set
             {
-                if(value!=null)
+                if(value!=null && currentMode != value)
                 {
                     //call the function to change the icon(selection)
                     Pattern_ItemSelected(value);
@@ -209,26 +168,34 @@ namespace BLE.Client.ViewModels
         {
             try
             {
-                //if (_device == null)
-                //{
-                //    Close(this);
-                //}
+                if (_device == null)
+                {
+                    Close(this);
+                }
+
+                string orig = _settings.GetValueOrDefault<string>("lastcommand", null);
 
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
 
-
+                if (orig == null) return;
 
                 var service = await _device.GetServiceAsync(RFduinoService);
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
 
                 var data = GetBytes(commandtext);
 
+                /*
                 int period = (_speedPct) * 1000;
                 data[1] = (byte)period;
                 data[2] = (byte)(period >> 8);
-                
+                */
 
-                _userDialogs.ShowLoading("Setting "+commandtext);
+                // not actually a pct 
+                data[1] = (byte)_speedPct;
+                data[2] = (byte)_brightnessPct;
+
+
+                _userDialogs.ShowLoading("Setting "+data.ToHexString());
                 await Characteristic.WriteAsync(data);
                 _userDialogs.HideLoading();
 
@@ -245,8 +212,6 @@ namespace BLE.Client.ViewModels
         protected override async void InitFromBundle(IMvxBundle parameters)
         {
             base.InitFromBundle(parameters);
-
-
 
             _device = GetDeviceFromBundle(parameters);
 
@@ -400,6 +365,7 @@ namespace BLE.Client.ViewModels
                 RaisePropertyChanged();
             }
         }
+
 
         //public MvxCommand ToggleUpdatesCommand => new MvxCommand((() =>
         //{

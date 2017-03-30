@@ -26,7 +26,7 @@
 
             <ContentPage.Content>
                 <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
-                    <ListView x:Name="listView" SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+                    <ListView x:Name="listView" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
 
                     </ListView>
                 </StackLayout>
@@ -42,7 +42,7 @@
                 <pages:BasePage
                                         Title="Patterns">
                     <StackLayout>
-                        <ListView x:Name="ModeList"  ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
+                        <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
 
                             <ListView.ItemTemplate>
                                 <DataTemplate>
@@ -76,9 +76,27 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
 
-                        </ListView >
-                    </StackLayout>
-                </pages:BasePage>
+                                </ListView >
+                            </StackLayout>
+                        </pages:BasePage>
+
+                        <ContentPage Title="Settings">
+                            <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="StartAndExpand">
+
+                                <Slider x:Name="Speed" Minimum="0" Maximum="100" />
+                                <Label HorizontalOptions="Center" Text="Speed" />
+
+                                <BoxView HeightRequest="20"  />
+
+
+                                <Slider x:Name="Brightness" Minimum="0" Maximum="100" />
+                                <Label HorizontalOptions="Center" Text="Brightness" />
+                            </StackLayout>
+                        </ContentPage>
+
+                        </pages:BaseTabbedPage.Children>
+
+                </pages:BaseTabbedPage>
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>
