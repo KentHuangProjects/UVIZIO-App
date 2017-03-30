@@ -47,7 +47,8 @@
                         <pages:BasePage
                                         Title="Patterns">
                             <StackLayout>
-                                <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
+                                <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode}"   
+                                          RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
 
                                     <ListView.ItemTemplate>
                                         <DataTemplate>

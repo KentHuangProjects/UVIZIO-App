@@ -42,14 +42,15 @@
                 <pages:BasePage Title="Settings">
                     <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="StartAndExpand">
 
-                        <Slider x:Name="Speed" Minimum="0" Maximum="100" />
-                        <Label HorizontalOptions="Center" Text="Speed" />
+                      <Slider x:Name="Speed" Minimum="0" Maximum="255" Value="{Binding Speed}" />
+                      <Label HorizontalOptions="Center" Text="Speed" />
 
-                        <BoxView HeightRequest="20"  />
+                      <BoxView HeightRequest="20"  />
 
 
-                        <Slider x:Name="Brightness" Minimum="0" Maximum="100" />
-                        <Label HorizontalOptions="Center" Text="Brightness" />
+                      <Slider x:Name="Brightness" Minimum="0" Maximum="255" Value="{Binding Brightness}" />
+                      <Label HorizontalOptions="Center" Text="Brightness" />
+                      
                     </StackLayout>
                 </pages:BasePage>
             </x:Arguments>

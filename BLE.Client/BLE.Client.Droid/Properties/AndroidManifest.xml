@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.uviz.app" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.uviz.app" android:installLocation="auto" android:versionName="1.1.1" android:versionCode="3">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="23" />
 	<application android:label="UVIZIO Connect" android:icon="@drawable/logo" android:theme="@style/MyTheme"></application>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

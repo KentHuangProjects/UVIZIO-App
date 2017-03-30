@@ -71,7 +71,7 @@ namespace BLE.Client.ViewModels
         private IDevice _device;
 
         private ISettings _settings;
-        private int _speedPct = 200;
+        private int _speedPct = 200;            // out of 255 not 100 
         private int _brightnessPct = 250;
 
 
@@ -137,7 +137,7 @@ namespace BLE.Client.ViewModels
             }
             set
             {
-                if(value!=null)
+                if(value!=null && currentMode != value)
                 {
                     //call the function to change the icon(selection)
                     Pattern_ItemSelected(value);
@@ -168,12 +168,16 @@ namespace BLE.Client.ViewModels
         {
             try
             {
-                //if (_device == null)
-                //{
-                //    Close(this);
-                //}
+                if (_device == null)
+                {
+                    Close(this);
+                }
+
+                string orig = _settings.GetValueOrDefault<string>("lastcommand", null);
 
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
+
+                if (orig == null) return;
 
                 var service = await _device.GetServiceAsync(RFduinoService);
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
@@ -186,11 +190,12 @@ namespace BLE.Client.ViewModels
                 data[2] = (byte)(period >> 8);
                 */
 
+                // not actually a pct 
                 data[1] = (byte)_speedPct;
                 data[2] = (byte)_brightnessPct;
 
 
-                _userDialogs.ShowLoading("Setting "+commandtext);
+                _userDialogs.ShowLoading("Setting "+data.ToHexString());
                 await Characteristic.WriteAsync(data);
                 _userDialogs.HideLoading();
 
