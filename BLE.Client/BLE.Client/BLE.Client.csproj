@@ -60,6 +60,9 @@
     <Compile Include="Pages\DeviceListPage.xaml.cs">
       <DependentUpon>DeviceListPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\Mode.cs" />
     <Compile Include="Pages\PatternPage.xaml.cs">
       <DependentUpon>PatternPage.xaml</DependentUpon>
@@ -78,6 +81,7 @@
     <Compile Include="ViewModels\PatternViewModel.cs" />
     <Compile Include="ViewModels\ServiceListViewModel.cs" />
     <Compile Include="ViewModels\DeviceListViewModel.cs" />
+    <Compile Include="ViewModels\SettingsPageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Acr.UserDialogs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -178,6 +182,12 @@
     <EmbeddedResource Include="Pages\CharacteristicDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Pages\SettingsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
