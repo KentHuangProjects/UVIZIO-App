@@ -33,7 +33,30 @@ namespace BLE.Client.ViewModels
 
         public static string BLINK_PURPLE = MODE_BLINK  + " 00 FF 01 FF 00 FF";
 
-        
+        public MasterPageItem SelectMasterItem
+        {
+            get { return null; }
+            set
+            {
+                menuNavigate(value.Title);
+            }
+        }
+
+        public void menuNavigate(String title)
+        {
+            switch (title)
+            {
+                case "Devices":
+                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    break;
+                case "Modes":
+                    break;
+                case "Settings":
+                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    break;
+            }
+        }
+
         //the master  items
         public class MasterPageItem
         {
@@ -42,9 +65,6 @@ namespace BLE.Client.ViewModels
             //public string IconSource { get; set; }
 
             //public Type TargetType { get; set; }
-
-                
-
         }
 
         public List<MasterPageItem> MenuItems { get; set; } = new List<MasterPageItem>
@@ -60,6 +80,10 @@ namespace BLE.Client.ViewModels
                     Title = "Modes",
                     //IconSource = "todo.png",
                    // TargetType = typeof(TabbedPageModeAndAdjustment)
+                },
+                new MasterPageItem
+                {
+                    Title = "Settings",
                 },
             };
         //the master  items
