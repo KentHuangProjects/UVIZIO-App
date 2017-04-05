@@ -6,19 +6,16 @@
              Title="Discover devices"
              x:Name="DevicePage">
     <MasterDetailPage.Master>
-        <ContentPage Title="Menu" BackgroundColor="Black"
-             BackgroundImage="menu_bg.png">
+        <ContentPage Title="Menu" BackgroundColor="Black" BackgroundImage="menu_bg.png">
             
-
                 <ContentPage.Resources>
                     <ResourceDictionary>
                         <DataTemplate x:Key="MenuItemTemplate">
-                            <ViewCell>
-                                
+                            <ViewCell>                                
 
-                                    <Label Text="{Binding Title}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Center"></Label>
-
-                                
+                                  <Label Text="{Binding Title}" TextColor="White" FontSize="Large" 
+                                          HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
+                              
                             </ViewCell>
                         </DataTemplate>
                     </ResourceDictionary>

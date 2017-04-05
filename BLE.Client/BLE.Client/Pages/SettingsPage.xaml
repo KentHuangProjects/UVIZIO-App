@@ -17,7 +17,8 @@
                         <ViewCell>
 
 
-                            <Label Text="{Binding Title}" TextColor="White" FontSize="Large" HorizontalTextAlignment="Center"></Label>
+                            <Label Text="{Binding Title}" TextColor="White" FontSize="Large" 
+                                   HorizontalTextAlignment="Center"  VerticalTextAlignment="Center"></Label>
 
 
                         </ViewCell>
