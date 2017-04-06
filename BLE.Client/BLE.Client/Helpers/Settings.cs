@@ -15,8 +15,8 @@ namespace BLE.Client.Helpers
   {
 
     public static IDevice DEVICE = null;
-    public static byte BRIGHTNESS = 255;
-    public static byte SPEED = 255;
+    public static int BRIGHTNESS = 255;
+    public static int SPEED = 255;
     public static Mode MODE = null;
     public static string LAST_COMMAND = null;
 

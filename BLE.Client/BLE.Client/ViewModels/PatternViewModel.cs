@@ -179,7 +179,7 @@ namespace BLE.Client.ViewModels
 
         }
         //function to send different modes to BLE device
-        private async void uvizioWriting(string commandtext)
+        private async void uvizioWriting(string commandtext, bool showErrors = true)
         {
             try
             {
@@ -190,17 +190,22 @@ namespace BLE.Client.ViewModels
 
                 string orig = _settings.GetValueOrDefault<string>("lastcommand", null);
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
+
                 if (orig == null) return;
 
-                await UVIZIO.writeDevice(Settings.DEVICE, _userDialogs, commandtext);
+                var diag = showErrors ? _userDialogs : null;
+                await UVIZIO.writeDevice(Settings.DEVICE, diag, commandtext);
 
                 RaisePropertyChanged(() => CharacteristicValue);
                 
             }
             catch (Exception ex)
             {
-                _userDialogs.HideLoading();
-                _userDialogs.ShowError(ex.Message);
+                if (showErrors)
+                {
+                    _userDialogs.HideLoading();
+                    _userDialogs.ShowError(ex.Message);
+                }
             }
         }
 
@@ -247,11 +252,9 @@ namespace BLE.Client.ViewModels
             try
             {
                 _userDialogs.ShowLoading("Reading characteristic value...");
-
                 await Characteristic.ReadAsync();
 
                 RaisePropertyChanged(() => CharacteristicValue);
-
                 Messages.Insert(0, $"Read value {CharacteristicValue}");
             }
             catch (Exception ex)
@@ -271,9 +274,7 @@ namespace BLE.Client.ViewModels
 
         // ViewModel
         public string WriteText { get; set; }
-
-
-
+        
         //new MvxCommand
         public MvxCommand<string> InputCommand => new MvxCommand<string>(async param =>
         {
@@ -331,20 +332,21 @@ namespace BLE.Client.ViewModels
             return text.Split(' ').Where(token => !string.IsNullOrEmpty(token)).Select(token => Convert.ToByte(token, 16)).ToArray();
         }
 
-        /*
+        
         
         public int Speed
         {
-            get { return _speedPct; }
+            get { return Settings.SPEED; }
             set
             {
                 //L.Info("PatternViewModel", "Setting speed to "+_speedPct);
 
-                _speedPct = value;
-                _settings.AddOrUpdateValue("speed_pct", _speedPct);
+                Settings.SPEED = value;
+                _settings.AddOrUpdateValue("speed_pct", value);
 
-                var last = _settings.GetValueOrDefault<string>("lastcommand", null);
-                if(last != null) uvizioWriting(last);
+                //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
+                var last = Settings.LAST_COMMAND;
+                if(last != null) uvizioWriting(last, false);
 
                 RaisePropertyChanged();
             }
@@ -352,20 +354,21 @@ namespace BLE.Client.ViewModels
 
         public int Brightness
         {
-            get { return _brightnessPct; }
+            get { return Settings.BRIGHTNESS; }
             set
             {
-                _brightnessPct = value;
-                _settings.AddOrUpdateValue("brightness_pct", _brightnessPct);
+                Settings.BRIGHTNESS = value;
+                _settings.AddOrUpdateValue("brightness_pct", value);
 
-                var last = _settings.GetValueOrDefault<string>("lastcommand", null);
-                if (last != null) uvizioWriting(last);
+                //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
+                var last = Settings.LAST_COMMAND;
+                if (last != null) uvizioWriting(last, false);
 
                 RaisePropertyChanged();
             }
         }
 
-    */
+    
 
         //public MvxCommand ToggleUpdatesCommand => new MvxCommand((() =>
         //{

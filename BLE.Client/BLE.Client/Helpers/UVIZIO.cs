@@ -35,8 +35,8 @@ namespace BLE.Client.Helpers
             */
 
             // not actually a pct 
-            data[1] = Settings.BRIGHTNESS;
-            data[2] = Settings.SPEED;
+            data[1] = (byte)Settings.BRIGHTNESS;
+            data[2] = (byte)Settings.SPEED;
 
 
             //_userDialogs.ShowLoading("Setting " + data.ToHexString());
