@@ -11,8 +11,6 @@ namespace BLE.Client.Pages
         public DeviceListPage()
         {
             InitializeComponent();
-            NavigationPage.SetHasBackButton(this, false);
-            NavigationPage.SetHasNavigationBar(this, false);
 
             
 

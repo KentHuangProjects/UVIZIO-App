@@ -37,5 +37,16 @@ namespace BLE.Client.Droid
 
             Mvx.Resolve<IMvxAppStart>().Start();
         }
+
+        /*
+        public override void OnBackPressed()
+        {
+            return;
+            Finish();
+            base.OnBackPressed();
+            //base.OnBackPressed() p
+        }
+        */
+
     }
 }

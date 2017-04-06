@@ -49,6 +49,7 @@ namespace BLE.Client.ViewModels
                 case "Devices":
                     break;
                 case "Modes":
+                    
                     ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
                 case "Settings":
@@ -173,7 +174,7 @@ namespace BLE.Client.ViewModels
             Adapter.DeviceConnectionLost += OnDeviceConnectionLost;
         }
 
-
+        
 
         private Task GetPreviousGuidAsync()
         {
