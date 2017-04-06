@@ -39,7 +39,7 @@ namespace BLE.Client.ViewModels
                 case "Modes":
                     break;
                 case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
+                   // ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
             }
         }
@@ -48,6 +48,7 @@ namespace BLE.Client.ViewModels
         public class MasterPageItem
         {
             public string Title { get; set; }
+
 
             //public string IconSource { get; set; }
 

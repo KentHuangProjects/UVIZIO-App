@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BLE.Client.ViewModels;
+using System.Collections.Generic;
 using Xamarin.Forms;
 
 namespace BLE.Client.Pages
@@ -12,7 +13,9 @@ namespace BLE.Client.Pages
             InitializeComponent();
             NavigationPage.SetHasBackButton(this, false);
             NavigationPage.SetHasNavigationBar(this, false);
+
             
+
         }
 
         

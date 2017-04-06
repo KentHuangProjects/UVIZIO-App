@@ -62,7 +62,6 @@
     <Compile Include="DeviceListItemViewModel.cs" />
     <Compile Include="ViewModels\PatternViewModel.cs" />
     <Compile Include="ViewModels\DeviceListViewModel.cs" />
-    <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Acr.UserDialogs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
