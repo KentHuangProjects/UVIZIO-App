@@ -15,7 +15,7 @@ namespace BLE.Client.Pages
 
     public partial class PatternPage 
     {
-        
+        BaseCarouselPage tabPage;
 
         public PatternPage()
         {
@@ -24,9 +24,11 @@ namespace BLE.Client.Pages
             NavigationPage.SetHasBackButton(this, false);
             NavigationPage.SetHasNavigationBar(this, false);
 
-            var tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
+            tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
 
             tabPage.CurrentPageChanged += CurrentPageChanged;
+
+            
 
 
 
@@ -35,7 +37,14 @@ namespace BLE.Client.Pages
         //ModeList.SelectedItem = modes.ElementAt(0);
 
 
-    }
+        }
+
+        private void goingToSetting(object sender, System.EventArgs e) {
+            tabPage.CurrentPage = tabPage.Children[1];
+        }
+
+
+
 
         private void CurrentPageChanged(object sender, System.EventArgs e)
         {
@@ -54,7 +63,7 @@ namespace BLE.Client.Pages
 
         private void listView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            var tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
+            tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
             Debug.WriteLine(e.SelectedItem.GetType().ToString());
             MasterPageItem mt = (MasterPageItem)e.SelectedItem;
             string t = mt.Title;
