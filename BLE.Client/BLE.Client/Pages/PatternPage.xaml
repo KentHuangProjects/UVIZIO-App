@@ -15,7 +15,7 @@
                     <DataTemplate x:Key="MenuItemTemplate">
                         <ViewCell>
 
-                            <Label Text="{Binding Title}" TextColor="White" FontSize="Large"
+                            <Label Text="{Binding Title}"  TextColor="White" FontSize="Large"
                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
 
                         </ViewCell>
@@ -25,7 +25,7 @@
 
             <ContentPage.Content>
                 <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
-                    <ListView x:Name="listView" SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+                    <ListView x:Name="listView" ItemSelected="listView_ItemSelected"  SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
 
                     </ListView>
                 </StackLayout>
@@ -38,6 +38,8 @@
     <MasterDetailPage.Detail>
         <NavigationPage>
             <x:Arguments>
+                <pages:BaseTabbedPage x:Name="tabpage">
+                <pages:BaseTabbedPage.Children>
                 <pages:BasePage Title="Patterns">
                     <StackLayout>
                         <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
@@ -73,6 +75,40 @@
                                 </ListView >
                     </StackLayout>
                 </pages:BasePage>
+
+                  <pages:BasePage Title="Settings"  BackgroundColor="Black" BackgroundImage="settings_bg.png">
+                    <StackLayout Padding="10" Orientation="Vertical" VerticalOptions="StartAndExpand">
+
+                      <Grid>
+                        <Grid.RowDefinitions>
+                          <RowDefinition Height="*" />
+                          <RowDefinition Height="10*" />
+                          <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*" />
+                          <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label HorizontalOptions="Center" Text="Brightness" FontSize="Large" TextColor="White" Grid.Row="0" Grid.Column="0" />
+                        <!--<Image Source="brightness.png" HorizontalOptions="Center" Grid.Row="0" Grid.Column="0" />-->
+                        <RelativeLayout Grid.Row="1" Grid.Column="0">
+                          <Slider x:Name="Brightness" Minimum="0" Maximum="255" Value="{Binding Brightness}" Rotation="-90" Scale="2.0" Margin="0, 150, 0, 0"
+                                  RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"/>
+                        </RelativeLayout>
+
+                        <Label HorizontalOptions="Center" Text="Speed" FontSize="Large" TextColor="White" Grid.Row="0" Grid.Column="1" />
+                        <!--<Image Source="speed.png" HorizontalOptions="Center" Grid.Row="0" Grid.Column="1" />-->
+                        <RelativeLayout Grid.Row="1" Grid.Column="1">
+                          <Slider x:Name="Speed" Minimum="0" Maximum="255" Value="{Binding Speed}" Rotation="-90" Scale="2.0" Margin="0, 150, 0, 0"
+                               RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"/>
+                        </RelativeLayout>
+                      </Grid>
+
+                    </StackLayout>
+                  </pages:BasePage>
+                  </pages:BaseTabbedPage.Children>
+              </pages:BaseTabbedPage>
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>
