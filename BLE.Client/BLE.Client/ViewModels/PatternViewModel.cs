@@ -34,7 +34,9 @@ namespace BLE.Client.ViewModels
             switch (title)
             {
                 case "Devices":
-                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
+                    Close(this);
+                    //Finish();
+                    //ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
                 case "Modes":
                     break;

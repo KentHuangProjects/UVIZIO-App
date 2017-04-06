@@ -43,7 +43,7 @@ namespace BLE.Client.Pages
             if (t == "Settings")
             {
                 tabPage.Title = "Settings";
-                tabPage.CurrentPage = tabPage.Children[0];
+                tabPage.CurrentPage = tabPage.Children[1];
                 this.IsPresented = false;
             }
                 
