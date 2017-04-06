@@ -37,10 +37,12 @@ namespace BLE.Client.Pages
             MasterPageItem mt = (MasterPageItem)e.SelectedItem;
             string t = mt.Title;
             if (t == "Modes")
+                tabPage.Title = "Modes";
                 tabPage.CurrentPage = tabPage.Children[0];
                 this.IsPresented = false;
             if (t == "Settings")
             {
+                tabPage.Title = "Settings";
                 tabPage.CurrentPage = tabPage.Children[0];
                 this.IsPresented = false;
             }
