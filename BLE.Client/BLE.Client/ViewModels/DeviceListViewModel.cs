@@ -173,7 +173,7 @@ namespace BLE.Client.ViewModels
             Adapter.DeviceConnectionLost += OnDeviceConnectionLost;
         }
 
-
+        
 
         private Task GetPreviousGuidAsync()
         {
