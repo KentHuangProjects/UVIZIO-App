@@ -24,11 +24,33 @@ namespace BLE.Client.Pages
             NavigationPage.SetHasBackButton(this, false);
             NavigationPage.SetHasNavigationBar(this, false);
 
-           
-            //ModeList.SelectedItem = modes.ElementAt(0);
+            var tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
 
-           
+            tabPage.CurrentPageChanged += CurrentPageChanged;
+
+
+
+
+
+        //ModeList.SelectedItem = modes.ElementAt(0);
+
+
+    }
+
+        private void CurrentPageChanged(object sender, System.EventArgs e)
+        {
+            Debug.WriteLine(e.GetType().ToString());
+            var tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
+            if(tabPage.Title == "Modes")
+            {
+                tabPage.Title = "Settings";
+            } else if(tabPage.Title == "Settings")
+            {
+                tabPage.Title = "Modes";
+            }
         }
+
+
 
         private void listView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
@@ -37,12 +59,12 @@ namespace BLE.Client.Pages
             MasterPageItem mt = (MasterPageItem)e.SelectedItem;
             string t = mt.Title;
             if (t == "Modes")
-                tabPage.Title = "Modes";
+            {
                 tabPage.CurrentPage = tabPage.Children[0];
                 this.IsPresented = false;
+            }
             if (t == "Settings")
             {
-                tabPage.Title = "Settings";
                 tabPage.CurrentPage = tabPage.Children[1];
                 this.IsPresented = false;
             }

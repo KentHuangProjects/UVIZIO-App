@@ -38,7 +38,7 @@
     <MasterDetailPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <pages:BaseCarouselPage x:Name="BaseCarouselPage" >
+                <pages:BaseCarouselPage x:Name="BaseCarouselPage" Title="Modes" >
                     <pages:BaseCarouselPage.Children>
                 <pages:BasePage Title="Patterns">
                     <StackLayout>
