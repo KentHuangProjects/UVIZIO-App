@@ -12,26 +12,13 @@ using System.Collections.Generic;
 using Xamarin.Forms;
 using Plugin.Settings.Abstractions;
 using System.Threading.Tasks;
+using BLE.Client.Helpers;
 
 namespace BLE.Client.ViewModels
 {
     public class PatternViewModel : BaseViewModel
     {
-        public static string MODE_OFF = "00";
-        public static string MODE_STATIC = "01";
-        public static string MODE_BLINK = "02";
-        public static string MODE_FADE = "03";
-        public static string MODE_FRAMES = "04";
-        public static string MODE_RAINBOW = "05";
-        public static string MODE_COLOR_STROBE = "06";
-        public static string MODE_COLOR_WALK = "07";
-        public static string MODE_FIRE_PIXEL = "08";
-
-        public static string STATIC_RED =   MODE_STATIC + " 00 00 00 FF 00 00";
-        public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
-        public static string STATIC_BLUE =  MODE_STATIC + " 00 00 00 00 00 FF";
-
-        public static string BLINK_PURPLE = MODE_BLINK  + " 00 FF 01 FF 00 FF";
+        
 
         public MasterPageItem SelectMasterItem
         {
@@ -47,12 +34,12 @@ namespace BLE.Client.ViewModels
             switch (title)
             {
                 case "Devices":
-                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
+                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
                 case "Modes":
                     break;
                 case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
+                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
             }
         }
@@ -89,14 +76,15 @@ namespace BLE.Client.ViewModels
         //the master  items
 
 
-        private static Guid RFduinoService = Guid.ParseExact("aba8a706-f28c-11e6-bc64-92361f002671", "d");
-        private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
+        //private static Guid RFduinoService = Guid.ParseExact("aba8a706-f28c-11e6-bc64-92361f002671", "d");
+        //private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
+        //private static Guid RFduinoDisconnectCharacteristic = Guid.ParseExact("aba8a709-f28c-11e6-bc64-92361f002671", "d")
 
         //private IDevice _device;
 
         private ISettings _settings;
-        private int _speedPct = 200;            // out of 255 not 100 
-        private int _brightnessPct = 250;
+        //private int _speedPct = 200;            // out of 255 not 100 
+        //private int _brightnessPct = 250;
 
 
         private readonly IUserDialogs _userDialogs;
@@ -126,13 +114,13 @@ namespace BLE.Client.ViewModels
 
         public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
             {
-                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           MODE_RAINBOW ),
+                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           Mode.RAINBOW ),
 
-                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    MODE_COLOR_STROBE ),
+                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    Mode.COLOR_STROBE ),
 
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      MODE_COLOR_WALK),
+                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      Mode.COLOR_WALK),
 
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      MODE_FIRE_PIXEL),
+                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      Mode.FIRE_PIXEL),
             };
         private Mode currentMode { get; set; }
 
@@ -147,8 +135,8 @@ namespace BLE.Client.ViewModels
             //int speed = _settings.GetValueOrDefault("speed_pct", 50);
             //_speedPct = speed;
 
-
-            currentMode = modes.ElementAt(0);
+            if (Settings.MODE == null) Settings.MODE = modes[0];
+            currentMode = Settings.MODE;
             
         }
 
@@ -192,7 +180,7 @@ namespace BLE.Client.ViewModels
         {
             try
             {
-                if (DeviceListViewModel.DEVICE == null)
+                if (Settings.DEVICE == null)
                 {
                     Close(this);
                 }
@@ -203,8 +191,8 @@ namespace BLE.Client.ViewModels
 
                 if (orig == null) return;
 
-                var service = await DeviceListViewModel.DEVICE.GetServiceAsync(RFduinoService);
-                Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
+                var service = await Settings.DEVICE.GetServiceAsync(KnownServices.RFDUINO_SERVICE);
+                Characteristic = await service.GetCharacteristicAsync(KnownCharacteristics.RFDUINO_WRITE);
 
                 var data = GetBytes(commandtext);
 
@@ -215,8 +203,8 @@ namespace BLE.Client.ViewModels
                 */
 
                 // not actually a pct 
-                data[1] = (byte)_speedPct;
-                data[2] = (byte)_brightnessPct;
+                data[1] = Settings.SPEED;
+                data[2] = Settings.BRIGHTNESS;
 
 
                 _userDialogs.ShowLoading("Setting "+data.ToHexString());
@@ -240,7 +228,7 @@ namespace BLE.Client.ViewModels
             IDevice _device = GetDeviceFromBundle(parameters);
             if (_device != null)
             {
-                DeviceListViewModel.DEVICE = _device;
+                Settings.DEVICE = _device;
                 _settings.AddOrUpdateValue("deviceId", _device.Id.ToString());
             }
             //TODO when sending data, validate

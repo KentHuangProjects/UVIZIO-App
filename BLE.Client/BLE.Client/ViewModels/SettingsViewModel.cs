@@ -10,26 +10,14 @@ using Plugin.Settings.Abstractions;
 using Plugin.BLE.Abstractions.Extensions;
 using MvvmCross.Core.ViewModels;
 using System.Threading;
+using Plugin.BLE.Abstractions;
+using BLE.Client.Helpers;
 
 namespace BLE.Client.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        public static string MODE_OFF = "00";
-        public static string MODE_STATIC = "01";
-        public static string MODE_BLINK = "02";
-        public static string MODE_FADE = "03";
-        public static string MODE_FRAMES = "04";
-        public static string MODE_RAINBOW = "05";
-        public static string MODE_COLOR_STROBE = "06";
-        public static string MODE_COLOR_WALK = "07";
-
-        public static string STATIC_RED = MODE_STATIC + " 00 00 00 FF 00 00";
-        public static string STATIC_GREEN = MODE_STATIC + " 00 00 00 00 FF 00";
-        public static string STATIC_BLUE = MODE_STATIC + " 00 00 00 00 00 FF";
-
-        public static string BLINK_PURPLE = MODE_BLINK + " 00 FF 01 FF 00 FF";
-
+        
         public MasterPageItem SelectMasterItem
         {
             get { return null; }
@@ -44,10 +32,10 @@ namespace BLE.Client.ViewModels
             switch (title)
             {
                 case "Devices":
-                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
+                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
                 case "Modes":
-                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
                 case "Settings":
                     
@@ -89,15 +77,10 @@ namespace BLE.Client.ViewModels
                 },
             };
         //the master  items
-
-
-        private static Guid RFduinoService = Guid.ParseExact("aba8a706-f28c-11e6-bc64-92361f002671", "d");
-        private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
-
        
         private ISettings _settings;
-        private int _speedPct;
-        private int _brightnessPct;
+        private byte _speedPct;
+        private byte _brightnessPct;
 
 
         private readonly IUserDialogs _userDialogs;
@@ -134,9 +117,8 @@ namespace BLE.Client.ViewModels
             _userDialogs = userDialogs;
             _settings = settings;
 
-            _brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
-            int speed = _settings.GetValueOrDefault("speed_pct", 50);
-            _speedPct = speed;
+            _brightnessPct = Settings.BRIGHTNESS;
+            _speedPct = Settings.SPEED;
 
             //ConnectToPreviousDeviceAsync();
 
@@ -154,7 +136,7 @@ namespace BLE.Client.ViewModels
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
 
 
-                DeviceListViewModel.DEVICE = await Adapter.ConnectToKnownDeviceAsync(PreviousGuid, tokenSource.Token);
+                Settings.DEVICE = await Adapter.ConnectToKnownDeviceAsync(PreviousGuid, tokenSource.Token);
                 //await Adapter.ConnectToDeviceAsync(device.Device, tokenSource.Token);
             }
             catch (Exception ex)
@@ -213,7 +195,7 @@ namespace BLE.Client.ViewModels
         {
             try
             {
-                if (DeviceListViewModel.DEVICE == null)
+                if (Settings.DEVICE == null)
                 {
                     return;
                     //Close(this);
@@ -222,8 +204,8 @@ namespace BLE.Client.ViewModels
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
 
 
-                var service = await DeviceListViewModel.DEVICE.GetServiceAsync(RFduinoService);
-                Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
+                var service = await Settings.DEVICE.GetServiceAsync(KnownServices.RFDUINO_SERVICE);
+                Characteristic = await service.GetCharacteristicAsync(KnownCharacteristics.RFDUINO_WRITE);
 
                 var data = GetBytes(commandtext);
 
@@ -254,7 +236,7 @@ namespace BLE.Client.ViewModels
             if(tmp != null)
             {
                 _userDialogs.ShowSuccess("Connected");
-                DeviceListViewModel.DEVICE = tmp;
+                Settings.DEVICE = tmp;
             } else
             {
                 _userDialogs.ShowError("Unable to connect");
@@ -380,7 +362,7 @@ namespace BLE.Client.ViewModels
 
 
 
-        public int Speed
+        public byte Speed
         {
             get { return _speedPct; }
             set
@@ -388,7 +370,8 @@ namespace BLE.Client.ViewModels
                 //L.Info("PatternViewModel", "Setting speed to "+_speedPct);
 
                 _speedPct = value;
-                _settings.AddOrUpdateValue("speed_pct", _speedPct);
+                //_settings.AddOrUpdateValue("speed_pct", _speedPct);
+                Settings.SPEED = _speedPct;
 
                 //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
                 //if (last != null) uvizioWriting(last);
@@ -397,13 +380,14 @@ namespace BLE.Client.ViewModels
             }
         }
 
-        public int Brightness
+        public byte Brightness
         {
             get { return _brightnessPct; }
             set
             {
                 _brightnessPct = value;
-                _settings.AddOrUpdateValue("brightness_pct", _brightnessPct);
+                //_settings.AddOrUpdateValue("brightness_pct", _brightnessPct);
+                Settings.BRIGHTNESS = _brightnessPct;
 
                 //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
                 //if (last != null) uvizioWriting(last);

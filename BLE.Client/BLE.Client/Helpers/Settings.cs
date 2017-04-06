@@ -1,4 +1,6 @@
 // Helpers/Settings.cs
+using BLE.Client.ViewModels;
+using Plugin.BLE.Abstractions.Contracts;
 using Plugin.Settings;
 using Plugin.Settings.Abstractions;
 
@@ -11,6 +13,13 @@ namespace BLE.Client.Helpers
   /// </summary>
   public static class Settings
   {
+
+    public static IDevice DEVICE = null;
+    public static byte BRIGHTNESS = 255;
+    public static byte SPEED = 255;
+    public static Mode MODE = null;
+
+
     private static ISettings AppSettings
     {
       get
@@ -26,6 +35,8 @@ namespace BLE.Client.Helpers
 
     #endregion
 
+
+    
 
     public static string GeneralSettings
     {

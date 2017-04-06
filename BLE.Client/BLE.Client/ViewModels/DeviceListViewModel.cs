@@ -13,12 +13,13 @@ using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using Plugin.BLE.Abstractions.Extensions;
 using Plugin.Settings.Abstractions;
+using BLE.Client.Helpers;
 
 namespace BLE.Client.ViewModels
 {
     public class DeviceListViewModel : BaseViewModel
     {
-        public static IDevice DEVICE = null;
+        //public static IDevice DEVICE = null;
 
         public MasterPageItem SelectMasterItem
         {
@@ -33,7 +34,7 @@ namespace BLE.Client.ViewModels
         {
             base.InitFromBundle(parameters);
 
-            DEVICE = GetDeviceFromBundle(parameters);
+            Settings.DEVICE = GetDeviceFromBundle(parameters);
            // DEVICE = _device;
 
         }
@@ -48,10 +49,10 @@ namespace BLE.Client.ViewModels
                 case "Devices":
                     break;
                 case "Modes":
-                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DEVICE?.Id.ToString() } }));
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
                 case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DEVICE?.Id.ToString() } }));
+                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
                     break;
             }
         }
@@ -182,6 +183,7 @@ namespace BLE.Client.ViewModels
 
         private void OnDeviceConnectionLost(object sender, DeviceErrorEventArgs e)
         {
+            Settings.DEVICE = null;
             Devices.FirstOrDefault(d => d.Id == e.Device.Id)?.Update();
 
             _userDialogs.HideLoading();
@@ -285,6 +287,8 @@ namespace BLE.Client.ViewModels
 
         private void TryStartScanning(bool refresh = false)
         {
+            if (Settings.DEVICE != null) return;
+
             if (IsStateOn && (refresh || !Devices.Any()) && !IsRefreshing)
             {
                 ScanForDevices();
@@ -334,7 +338,11 @@ namespace BLE.Client.ViewModels
 
                 _userDialogs.ShowLoading($"Disconnecting {device.Name}...");
 
-                await Adapter.DisconnectDeviceAsync(device.Device);
+                var service = await Settings.DEVICE.GetServiceAsync(KnownServices.RFDUINO_SERVICE);
+                var Characteristic = await service.GetCharacteristicAsync(KnownCharacteristics.RFDUINO_DISCONNECT);
+                await Characteristic.WriteAsync(new byte[0]);
+
+                //await Adapter.DisconnectDeviceAsync(device.Device);
             }
             catch (Exception ex)
             {
