@@ -18,6 +18,7 @@ namespace BLE.Client.Helpers
     public static byte BRIGHTNESS = 255;
     public static byte SPEED = 255;
     public static Mode MODE = null;
+    public static string LAST_COMMAND = null;
 
 
     private static ISettings AppSettings

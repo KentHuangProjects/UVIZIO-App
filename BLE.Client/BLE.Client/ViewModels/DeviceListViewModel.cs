@@ -160,10 +160,16 @@ namespace BLE.Client.ViewModels
             _userDialogs = userDialogs;
             _settings = settings;
             // quick and dirty :>
+
+            _bluetoothLe.StateChanged -= OnStateChanged;
             _bluetoothLe.StateChanged += OnStateChanged;
+            Adapter.DeviceDiscovered -= OnDeviceDiscovered;
             Adapter.DeviceDiscovered += OnDeviceDiscovered;
+            Adapter.ScanTimeoutElapsed -= Adapter_ScanTimeoutElapsed;
             Adapter.ScanTimeoutElapsed += Adapter_ScanTimeoutElapsed;
+            Adapter.DeviceDisconnected -= OnDeviceDisconnected;
             Adapter.DeviceDisconnected += OnDeviceDisconnected;
+            Adapter.DeviceConnectionLost -= OnDeviceConnectionLost;
             Adapter.DeviceConnectionLost += OnDeviceConnectionLost;
         }
 
@@ -336,13 +342,7 @@ namespace BLE.Client.ViewModels
                 if (!device.IsConnected)
                     return;
 
-                _userDialogs.ShowLoading($"Disconnecting {device.Name}...");
-
-                var service = await Settings.DEVICE.GetServiceAsync(KnownServices.RFDUINO_SERVICE);
-                var Characteristic = await service.GetCharacteristicAsync(KnownCharacteristics.RFDUINO_DISCONNECT);
-                await Characteristic.WriteAsync(new byte[0]);
-
-                //await Adapter.DisconnectDeviceAsync(device.Device);
+                await UVIZIO.disconnectDevice(device, _userDialogs);
             }
             catch (Exception ex)
             {
@@ -402,7 +402,7 @@ namespace BLE.Client.ViewModels
             }
             catch (Exception ex)
             {
-                _userDialogs.Alert(ex.Message, "Connection error");
+                _userDialogs.Alert("Could not connect to "+device.Name, "Connection error");
                 Mvx.Trace(ex.Message);
                 return false;
             }

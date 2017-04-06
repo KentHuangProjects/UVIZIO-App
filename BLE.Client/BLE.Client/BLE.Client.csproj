@@ -42,6 +42,7 @@
     <Compile Include="Converters\InverseBooleanValueConverter.cs" />
     <Compile Include="Extensions\IUserDialogsExtensions.cs" />
     <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="Helpers\UVIZIO.cs" />
     <Compile Include="Pages\BaseMasterDetailPage.cs" />
     <Compile Include="Pages\BasePage.cs" />
     <Compile Include="Pages\BaseTabbedPage.cs" />

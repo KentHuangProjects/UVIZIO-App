@@ -392,6 +392,8 @@ namespace BLE.Client.ViewModels
                 //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
                 //if (last != null) uvizioWriting(last);
 
+                UVIZIO.writeDevice(Settings.DEVICE, null, Settings.LAST_COMMAND);
+
                 RaisePropertyChanged();
             }
         }

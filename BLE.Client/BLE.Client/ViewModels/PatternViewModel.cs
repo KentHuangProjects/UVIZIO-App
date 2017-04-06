@@ -186,30 +186,10 @@ namespace BLE.Client.ViewModels
                 }
 
                 string orig = _settings.GetValueOrDefault<string>("lastcommand", null);
-
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
-
                 if (orig == null) return;
 
-                var service = await Settings.DEVICE.GetServiceAsync(KnownServices.RFDUINO_SERVICE);
-                Characteristic = await service.GetCharacteristicAsync(KnownCharacteristics.RFDUINO_WRITE);
-
-                var data = GetBytes(commandtext);
-
-                /*
-                int period = (_speedPct) * 1000;
-                data[1] = (byte)period;
-                data[2] = (byte)(period >> 8);
-                */
-
-                // not actually a pct 
-                data[1] = Settings.SPEED;
-                data[2] = Settings.BRIGHTNESS;
-
-
-                _userDialogs.ShowLoading("Setting "+data.ToHexString());
-                await Characteristic.WriteAsync(data);
-                _userDialogs.HideLoading();
+                await UVIZIO.writeDevice(Settings.DEVICE, _userDialogs, commandtext);
 
                 RaisePropertyChanged(() => CharacteristicValue);
                 
