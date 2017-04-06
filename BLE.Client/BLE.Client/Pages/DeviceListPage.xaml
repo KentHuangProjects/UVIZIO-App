@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<pages:BaseMasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+<pages:BaseTabbedPage Title="UVIZIO"  xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:BLE.Client.Pages;assembly=BLE.Client"
              x:Class="BLE.Client.Pages.DeviceListPage"
-             Title="Discover devices"
              x:Name="DevicePage">
+  <!--
     <MasterDetailPage.Master>
         <ContentPage Title="Menu" BackgroundColor="Black" BackgroundImage="menu_bg.png">
             
@@ -35,8 +35,8 @@
 
     <MasterDetailPage.Detail>
         <NavigationPage>
-            <x:Arguments>
-                <pages:BaseTabbedPage Title="UVIZIO" >
+            <x:Arguments>-->
+                <!--<pages:BaseTabbedPage Title="UVIZIO" >-->
                     <pages:BaseTabbedPage.Resources>
                         <ResourceDictionary>
                             <DataTemplate x:Key="DeviceItemTemplate">
@@ -123,10 +123,10 @@
                     </pages:BaseTabbedPage.Children>
 
                 </pages:BaseTabbedPage>
-            </x:Arguments>
+            <!--</x:Arguments>
         </NavigationPage>
-    </MasterDetailPage.Detail>
-</pages:BaseMasterDetailPage>
+    </MasterDetailPage.Detail>-->
+<!--</pages:BasePage>-->
     
 
 
