@@ -32,21 +32,16 @@ namespace BLE.Client.Pages
 
         private void listView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            var tabPage = this.FindByName<BaseTabbedPage>("tabpage");
+            var tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
             Debug.WriteLine(e.SelectedItem.GetType().ToString());
             MasterPageItem mt = (MasterPageItem)e.SelectedItem;
             string t = mt.Title;
-            if(t== "Modes")
+            if (t == "Modes")
                 tabPage.CurrentPage = tabPage.Children[0];
                 this.IsPresented = false;
             if (t == "Settings")
             {
-                Debug.WriteLine("Children: " + tabPage.Children.Count);
-                var i = tabPage.Children[1];
-                Debug.WriteLine("Checking child");
-                if (i == null) Debug.WriteLine("null!");
-                Debug.WriteLine("Got child "+i.Title);
-                tabPage.CurrentPage = i;
+                tabPage.CurrentPage = tabPage.Children[0];
                 this.IsPresented = false;
             }
                 

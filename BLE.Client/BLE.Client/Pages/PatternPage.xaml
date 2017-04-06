@@ -38,8 +38,8 @@
     <MasterDetailPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <pages:BaseTabbedPage x:Name="tabpage">
-                <pages:BaseTabbedPage.Children>
+                <pages:BaseCarouselPage x:Name="BaseCarouselPage" >
+                    <pages:BaseCarouselPage.Children>
                 <pages:BasePage Title="Patterns">
                     <StackLayout>
                         <ListView x:Name="ModeList" ItemsSource="{Binding modes}" SelectedItem="{Binding selectedMode, Mode=TwoWay}"   RowHeight="150" BackgroundColor="Black" VerticalOptions="FillAndExpand" HorizontalOptions="StartAndExpand" >
@@ -107,8 +107,8 @@
 
                     </StackLayout>
                   </pages:BasePage>
-                  </pages:BaseTabbedPage.Children>
-              </pages:BaseTabbedPage>
+                  </pages:BaseCarouselPage.Children>
+              </pages:BaseCarouselPage>
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>
