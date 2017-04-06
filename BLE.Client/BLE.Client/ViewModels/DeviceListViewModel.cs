@@ -18,6 +18,7 @@ namespace BLE.Client.ViewModels
 {
     public class DeviceListViewModel : BaseViewModel
     {
+        public static IDevice DEVICE = null;
 
         public MasterPageItem SelectMasterItem
         {
@@ -32,14 +33,13 @@ namespace BLE.Client.ViewModels
         {
             base.InitFromBundle(parameters);
 
-
-
-            _device = GetDeviceFromBundle(parameters);
+            DEVICE = GetDeviceFromBundle(parameters);
+           // DEVICE = _device;
 
         }
             
 
-        private IDevice _device;
+        //private IDevice _device;
 
         public void menuNavigate(String title)
         {
@@ -48,10 +48,10 @@ namespace BLE.Client.ViewModels
                 case "Devices":
                     break;
                 case "Modes":
-                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DEVICE?.Id.ToString() } }));
                     break;
                 case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DEVICE?.Id.ToString() } }));
                     break;
             }
         }

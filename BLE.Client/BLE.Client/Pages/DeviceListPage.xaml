@@ -45,10 +45,7 @@
                                         <MenuItem Command="{Binding Path=BindingContext.DisconnectCommand, Source={x:Reference DevicePage}}"
                                                   CommandParameter="{Binding .}" IsDestructive="True"
                                                   Text="Disconnect"/>
-                                        <MenuItem Command="{Binding Path=BindingContext.ConnectCommand, Source={x:Reference DevicePage}}"
-                                                  CommandParameter="{Binding .}"
-                                                  Text="View 
-                                                  s"/>
+                                       
                                         <MenuItem Command="{Binding Path=BindingContext.CopyGuidCommand, Source={x:Reference DevicePage}}"
                                                   CommandParameter="{Binding .}"
                                                   Text="Copy Guid"/>

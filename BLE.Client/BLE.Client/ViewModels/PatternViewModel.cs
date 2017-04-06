@@ -47,12 +47,12 @@ namespace BLE.Client.ViewModels
             switch (title)
             {
                 case "Devices":
-                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
                     break;
                 case "Modes":
                     break;
                 case "Settings":
-                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
                     break;
             }
         }
@@ -92,7 +92,7 @@ namespace BLE.Client.ViewModels
         private static Guid RFduinoService = Guid.ParseExact("aba8a706-f28c-11e6-bc64-92361f002671", "d");
         private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
 
-        private IDevice _device;
+        //private IDevice _device;
 
         private ISettings _settings;
         private int _speedPct = 200;            // out of 255 not 100 
@@ -192,7 +192,7 @@ namespace BLE.Client.ViewModels
         {
             try
             {
-                if (_device == null)
+                if (DeviceListViewModel.DEVICE == null)
                 {
                     Close(this);
                 }
@@ -203,7 +203,7 @@ namespace BLE.Client.ViewModels
 
                 if (orig == null) return;
 
-                var service = await _device.GetServiceAsync(RFduinoService);
+                var service = await DeviceListViewModel.DEVICE.GetServiceAsync(RFduinoService);
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
 
                 var data = GetBytes(commandtext);
@@ -237,8 +237,12 @@ namespace BLE.Client.ViewModels
         {
             base.InitFromBundle(parameters);
 
-            _device = GetDeviceFromBundle(parameters);
-
+            IDevice _device = GetDeviceFromBundle(parameters);
+            if (_device != null)
+            {
+                DeviceListViewModel.DEVICE = _device;
+                _settings.AddOrUpdateValue("deviceId", _device.Id.ToString());
+            }
             //TODO when sending data, validate
             //if (_device == null)
             //{
@@ -356,7 +360,7 @@ namespace BLE.Client.ViewModels
             return text.Split(' ').Where(token => !string.IsNullOrEmpty(token)).Select(token => Convert.ToByte(token, 16)).ToArray();
         }
 
-
+        /*
         
         public int Speed
         {
@@ -390,6 +394,7 @@ namespace BLE.Client.ViewModels
             }
         }
 
+    */
 
         //public MvxCommand ToggleUpdatesCommand => new MvxCommand((() =>
         //{

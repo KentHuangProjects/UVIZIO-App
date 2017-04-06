@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using Plugin.Settings.Abstractions;
 using Plugin.BLE.Abstractions.Extensions;
 using MvvmCross.Core.ViewModels;
+using System.Threading;
 
 namespace BLE.Client.ViewModels
 {
@@ -43,10 +44,10 @@ namespace BLE.Client.ViewModels
             switch (title)
             {
                 case "Devices":
-                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
                     break;
                 case "Modes":
-                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, _device?.Id.ToString() } }));
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, DeviceListViewModel.DEVICE?.Id.ToString() } }));
                     break;
                 case "Settings":
                     
@@ -93,8 +94,7 @@ namespace BLE.Client.ViewModels
         private static Guid RFduinoService = Guid.ParseExact("aba8a706-f28c-11e6-bc64-92361f002671", "d");
         private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
 
-        private IDevice _device;
-
+       
         private ISettings _settings;
         private int _speedPct;
         private int _brightnessPct;
@@ -125,17 +125,7 @@ namespace BLE.Client.ViewModels
 
 
 
-        public ObservableCollection<Mode> modes { get; set; } = new ObservableCollection<Mode>
-            {
-                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           MODE_RAINBOW ),
-
-                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    MODE_COLOR_STROBE ),
-
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      MODE_COLOR_WALK),
-
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      STATIC_RED),
-            };
-        private Mode currentMode { get; set; }
+       
 
 
 
@@ -148,11 +138,40 @@ namespace BLE.Client.ViewModels
             int speed = _settings.GetValueOrDefault("speed_pct", 50);
             _speedPct = speed;
 
+            //ConnectToPreviousDeviceAsync();
 
-            currentMode = modes.ElementAt(0);
+
 
         }
 
+        private async void ConnectToPreviousDeviceAsync()
+        {
+            //IDevice device;
+            var guidString = _settings.GetValueOrDefault<string>("lastguid", null);
+            var PreviousGuid = !string.IsNullOrEmpty(guidString) ? Guid.Parse(guidString) : Guid.Empty;
+            try
+            {
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+
+
+                DeviceListViewModel.DEVICE = await Adapter.ConnectToKnownDeviceAsync(PreviousGuid, tokenSource.Token);
+                //await Adapter.ConnectToDeviceAsync(device.Device, tokenSource.Token);
+            }
+            catch (Exception ex)
+            {
+                _userDialogs.ShowError(ex.Message, 5000);
+                return;
+            }
+        }
+
+        private bool CanConnectToPrevious()
+        {
+            var guidString = _settings.GetValueOrDefault<string>("lastguid", null);
+            var PreviousGuid = !string.IsNullOrEmpty(guidString) ? Guid.Parse(guidString) : Guid.Empty;
+            return PreviousGuid != default(Guid) && PreviousGuid != null;
+        }
+
+        /*
         //the item to be binded AS:SelectedItem="{Binding selectedMode, Mode=TwoWay}" in listview of patternpage
         public Mode selectedMode
         {
@@ -173,9 +192,9 @@ namespace BLE.Client.ViewModels
                 }
             }
         }
+        */
 
-
-
+           /*
         private void Pattern_ItemSelected(Mode selected)
         {
 
@@ -188,19 +207,22 @@ namespace BLE.Client.ViewModels
             }
 
         }
+        */
         //function to send different modes to BLE device
         private async void uvizioWriting(string commandtext)
         {
             try
             {
-                //if (_device == null)
-                //{
-                //    Close(this);
-                //}
+                if (DeviceListViewModel.DEVICE == null)
+                {
+                    return;
+                    //Close(this);
+                }
 
                 _settings.AddOrUpdateValue("lastcommand", commandtext);
 
-                var service = await _device.GetServiceAsync(RFduinoService);
+
+                var service = await DeviceListViewModel.DEVICE.GetServiceAsync(RFduinoService);
                 Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
 
                 var data = GetBytes(commandtext);
@@ -227,8 +249,17 @@ namespace BLE.Client.ViewModels
         protected override async void InitFromBundle(IMvxBundle parameters)
         {
             base.InitFromBundle(parameters);
-
-            _device = GetDeviceFromBundle(parameters);
+            return;
+            var tmp = GetDeviceFromBundle(parameters);
+            if(tmp != null)
+            {
+                _userDialogs.ShowSuccess("Connected");
+                DeviceListViewModel.DEVICE = tmp;
+            } else
+            {
+                _userDialogs.ShowError("Unable to connect");
+            }
+            
 
             //TODO when sending data, validate
             //if (_device == null)
@@ -359,8 +390,8 @@ namespace BLE.Client.ViewModels
                 _speedPct = value;
                 _settings.AddOrUpdateValue("speed_pct", _speedPct);
 
-                var last = _settings.GetValueOrDefault<string>("lastcommand", null);
-                if (last != null) uvizioWriting(last);
+                //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
+                //if (last != null) uvizioWriting(last);
 
                 RaisePropertyChanged();
             }
@@ -374,8 +405,8 @@ namespace BLE.Client.ViewModels
                 _brightnessPct = value;
                 _settings.AddOrUpdateValue("brightness_pct", _brightnessPct);
 
-                var last = _settings.GetValueOrDefault<string>("lastcommand", null);
-                if (last != null) uvizioWriting(last);
+                //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
+                //if (last != null) uvizioWriting(last);
 
                 RaisePropertyChanged();
             }
