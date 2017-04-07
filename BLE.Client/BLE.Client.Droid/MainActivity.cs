@@ -1,4 +1,5 @@
 using Acr.UserDialogs;
+using Android;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
@@ -16,6 +17,15 @@ namespace BLE.Client.Droid
     public class MainActivity
         : FormsAppCompatActivity
     {
+        private readonly string[] Permissions =
+       {
+            Manifest.Permission.Bluetooth,
+            Manifest.Permission.BluetoothAdmin,
+            Manifest.Permission.BluetoothPrivileged,
+            Manifest.Permission.AccessCoarseLocation,
+            Manifest.Permission.AccessFineLocation
+        };
+
         protected override void OnCreate(Bundle bundle)
         {
 
@@ -29,6 +39,12 @@ namespace BLE.Client.Droid
 
             UserDialogs.Init(this);
             Forms.Init(this, bundle);
+
+            if(((int)Android.OS.Build.VERSION.SdkInt) >= 23)
+            {
+                CheckPermissions();
+            }
+            
             var formsApp = new BleMvxFormsApp();
             LoadApplication(formsApp);
 
@@ -36,6 +52,19 @@ namespace BLE.Client.Droid
             presenter.MvxFormsApp = formsApp;
 
             Mvx.Resolve<IMvxAppStart>().Start();
+        }
+
+        private void CheckPermissions()
+        {
+            bool minimumPermissionsGranted = true;
+
+            foreach (string permission in Permissions)
+            {
+                if (CheckSelfPermission(permission) != Permission.Granted) minimumPermissionsGranted = false;
+            }
+
+            // If one of the minimum permissions aren't granted, we request them from the user
+            if (!minimumPermissionsGranted) RequestPermissions(Permissions, 0);
         }
 
         /*
