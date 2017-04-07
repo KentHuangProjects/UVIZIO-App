@@ -1,42 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<pages:BaseTabbedPage Title="UVIZIO"  xmlns="http://xamarin.com/schemas/2014/forms"
+<pages:BaseTabbedPage Title="Devices"  xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:BLE.Client.Pages;assembly=BLE.Client"
              x:Class="BLE.Client.Pages.DeviceListPage"
              x:Name="DevicePage">
-  <!--
-    <MasterDetailPage.Master>
-        <ContentPage Title="Menu" BackgroundColor="Black" BackgroundImage="menu_bg.png">
-            
-                <ContentPage.Resources>
-                    <ResourceDictionary>
-                        <DataTemplate x:Key="MenuItemTemplate">
-                            <ViewCell>                                
-
-                                  <Label Text="{Binding Title}" TextColor="White" FontSize="Large" 
-                                          HorizontalTextAlignment="Center" VerticalTextAlignment="Center"></Label>
-                              
-                            </ViewCell>
-                        </DataTemplate>
-                    </ResourceDictionary>
-                </ContentPage.Resources>
-
-            <ContentPage.Content>
-                <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
-                    <ListView x:Name="listView" SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
-
-                    </ListView>
-                </StackLayout>
-
-            </ContentPage.Content>
-        </ContentPage>
-    </MasterDetailPage.Master>
-
-
-    <MasterDetailPage.Detail>
-        <NavigationPage>
-            <x:Arguments>-->
-                <!--<pages:BaseTabbedPage Title="UVIZIO" >-->
                     <pages:BaseTabbedPage.Resources>
                         <ResourceDictionary>
                             <DataTemplate x:Key="DeviceItemTemplate">
@@ -81,7 +48,7 @@
                         </ResourceDictionary>
                     </pages:BaseTabbedPage.Resources>
                     <pages:BaseTabbedPage.Children>
-                        <pages:BasePage Title="Scan for devices">
+                        <pages:BasePage Title="Devices">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"></RowDefinition>
@@ -102,15 +69,20 @@
                                 </ListView>
 
 
-                                <Label Grid.Row="2" Text="{Binding PreviousName}" FontSize="Small" TextColor="Gray" VerticalTextAlignment="End"/>
+                                <Label Grid.Row="2" Text="" FontSize="Small" TextColor="Gray" VerticalTextAlignment="End"/>
                                 <StackLayout Grid.Row="3" Orientation="Horizontal">
-                                    <Button Text="Connect to previous" IsEnabled="{Binding CanConnectToPrevious}" Command="{Binding ConnectToPreviousCommand}" HorizontalOptions="FillAndExpand"/>
-                                    <Button Text="Stop Scan" Command="{Binding StopScanCommand}" HorizontalOptions="End"/>
-                                    <ActivityIndicator IsRunning="{Binding IsRefreshing}"
-                             HeightRequest="24"
-                             WidthRequest="24"
-                             VerticalOptions="Center"
-                             HorizontalOptions="End"/>
+                                    <ActivityIndicator IsRunning="false"
+                                                       HeightRequest="24"
+                                                       WidthRequest="24"
+                                                       VerticalOptions="Center"/>
+                                   
+                                    <!--<Button Text="{Binding ReconnectPreviousName}" IsEnabled="{Binding CanConnectToPrevious}" Command="{Binding ConnectToPreviousCommand}" HorizontalOptions="FillAndExpand"/>-->
+                                    <!--<Button Text="Stop Scan" Command="{Binding StopScanCommand}" HorizontalOptions="End"/>-->
+                                    <ActivityIndicator  IsRunning="{Binding IsRefreshing}"
+                                                        HeightRequest="24"
+                                                        WidthRequest="24"
+                                                        VerticalOptions="Center"
+                                                        HorizontalOptions="End"/>
                                 </StackLayout>
 
                             </Grid>
@@ -123,129 +95,4 @@
                     </pages:BaseTabbedPage.Children>
 
                 </pages:BaseTabbedPage>
-            <!--</x:Arguments>
-        </NavigationPage>
-    </MasterDetailPage.Detail>-->
-<!--</pages:BasePage>-->
-    
-
-
-<!--<?xml version="1.0" encoding="utf-8" ?>
-<pages:BasePage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:pages="clr-namespace:BLE.Client.Pages;assembly=BLE.Client"
-             x:Class="BLE.Client.Pages.DeviceListPage"
-             Title="UVIZIO"
-             x:Name="DevicePage">
-  <pages:BasePage.Resources>
-    <ResourceDictionary>
-     <DataTemplate x:Key="DeviceItemTemplate">
-              <ViewCell>
-                <ViewCell.ContextActions>
-                  <MenuItem Command="{Binding Path=BindingContext.DisconnectCommand, Source={x:Reference DevicePage}}"
-                            CommandParameter="{Binding .}" IsDestructive="True"
-                            Text="Disconnect"/>
-                  <MenuItem Command="{Binding Path=BindingContext.CopyGuidCommand, Source={x:Reference DevicePage}}"
-                            CommandParameter="{Binding .}"
-                            Text="Copy Guid"/>
-                  <MenuItem Command="{Binding Path=BindingContext.ConnectDisposeCommand, Source={x:Reference DevicePage}}"
-                            CommandParameter="{Binding .}"
-                            Text="Connect and Dispose"/>
-                </ViewCell.ContextActions>
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                  </Grid.ColumnDefinitions>
-                  <Grid.Triggers>
-                    <DataTrigger TargetType="Grid"
-                                 Binding="{Binding IsConnected}"
-                                 Value="true">
-                      <Setter Property="BackgroundColor" Value="#1A00FF00"></Setter>
-                    </DataTrigger>
-                  </Grid.Triggers>
-                  <StackLayout Orientation="Vertical" VerticalOptions="Center" >
-                    <Label Text="{Binding Name}" FontSize="Large" />
-                    <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/>
-                  </StackLayout>
-                  <Label Grid.Column="1"
-                         Margin="10"
-                         Text="{Binding Rssi}"
-                         VerticalTextAlignment="Center"></Label>
-                </Grid>
-              </ViewCell>
-            </DataTemplate>
-      </ResourceDictionary>
-  </pages:BasePage.Resources>
-  
-    
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto"></RowDefinition>
-          <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <StackLayout Grid.Row="0" BackgroundColor="#FF6969" Padding="10" IsVisible="{Binding IsStateOn, Converter={StaticResource InverseBoolean}}">
-          <Label  Text="{Binding StateText}" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"></Label>
-        </StackLayout>
-
-       
-          <ListView Grid.Row="1" ItemsSource="{Binding SystemDevices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
-                   RowHeight="80"
-                   ItemTemplate="{StaticResource DeviceItemTemplate}">
-            <ListView.Header>
-              <StackLayout Orientation="Vertical">
-                --><!--<Label Text="UVIZIO" TextColor="Black"  FontSize="Medium" HorizontalOptions="Start" Margin="5"/>--><!--
-                <BoxView HeightRequest="20"  />
-                <Label Text="Connection" TextColor="Black" FontSize="Large" HorizontalOptions="Center"/>
-                <BoxView HeightRequest="50"  />
-              </StackLayout>
-            </ListView.Header>
-          </ListView>
-
-
-          <ListView Grid.Row="2" x:Name="discoverListV" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
-                   IsPullToRefreshEnabled="True"
-                   RefreshCommand="{Binding RefreshCommand}"
-                   IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
-                   RowHeight="80"
-                   ItemTemplate="{StaticResource DeviceItemTemplate}">
-
-          </ListView>
-
-        
-        
-          
-
-        
-
-
-        --><!--<Label Grid.Row="2" Text="{Binding PreviousGuid, StringFormat='{0}'}" FontSize="Small" TextColor="Gray" VerticalTextAlignment="End"/>--><!--
-        <StackLayout Grid.Row="4" Orientation="Horizontal">
-          
-          --><!--comment out the two button at the bottom-->
-          <!--<Button Text="Connect to previous" Command="{Binding ConnectToPreviousCommand}" HorizontalOptions="FillAndExpand"/>
-          <Button Text="Stop Scan" Command="{Binding StopScanCommand}" HorizontalOptions="End"/>--><!--
-            <Button   Text="discover" Command="{Binding RefreshCommand}" VerticalOptions="Center" HorizontalOptions="CenterAndExpand"
-                ></Button>
-
-
-            <ActivityIndicator IsRunning="{Binding IsRefreshing}"
-                             HeightRequest="24"
-                             WidthRequest="24"
-                             VerticalOptions="Center"
-                             HorizontalOptions="End"/>
-        </StackLayout>
-
-      </Grid>
-    --><!--<pages:BasePage Title="System devices">
-       <ListView ItemsSource="{Binding SystemDevices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
-                 RowHeight="80"
-                 ItemTemplate="{StaticResource DeviceItemTemplate}"/>
-    </pages:BasePage>--><!--
-  
-
-</pages:BasePage>-->
 

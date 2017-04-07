@@ -25,7 +25,7 @@
 
             <ContentPage.Content>
                 <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand" >
-                    <ListView x:Name="listView" ItemSelected="listView_ItemSelected"  SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
+                    <ListView x:Name="listView" BackgroundColor="Transparent" ItemSelected="listView_ItemSelected"  SelectedItem="{Binding SelectMasterItem, Mode=TwoWay}" SeparatorColor="Transparent" SeparatorVisibility="None" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource MenuItemTemplate}" VerticalOptions="FillAndExpand"  RowHeight="100"  HorizontalOptions="CenterAndExpand"  >
 
                     </ListView>
                 </StackLayout>

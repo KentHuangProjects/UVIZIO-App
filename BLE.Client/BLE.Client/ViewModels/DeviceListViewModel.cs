@@ -14,6 +14,7 @@ using Plugin.BLE.Abstractions.EventArgs;
 using Plugin.BLE.Abstractions.Extensions;
 using Plugin.Settings.Abstractions;
 using BLE.Client.Helpers;
+using Xamarin.Forms;
 
 namespace BLE.Client.ViewModels
 {
@@ -35,7 +36,7 @@ namespace BLE.Client.ViewModels
             base.InitFromBundle(parameters);
 
             Settings.DEVICE = GetDeviceFromBundle(parameters);
-           // DEVICE = _device;
+            // DEVICE = _device;
 
         }
             
@@ -117,6 +118,17 @@ namespace BLE.Client.ViewModels
                 _settings.AddOrUpdateValue("lastname", _previousName);
                 RaisePropertyChanged();
                 RaisePropertyChanged(() => ConnectToPreviousCommand);
+                RaisePropertyChanged(() => ReconnectPreviousName);
+            }
+        }
+
+        public string ReconnectPreviousName
+        {
+            get {
+                if (CanConnectToPrevious())
+                    return "Reconnect to " + _previousName;
+                else
+                    return "No Previous Device";
             }
         }
 
@@ -172,6 +184,23 @@ namespace BLE.Client.ViewModels
             Adapter.DeviceDisconnected += OnDeviceDisconnected;
             Adapter.DeviceConnectionLost -= OnDeviceConnectionLost;
             Adapter.DeviceConnectionLost += OnDeviceConnectionLost;
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(2000);
+                
+                if(_bluetoothLe.State == BluetoothState.On) TryStartScanning(true);
+
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        _userDialogs.Toast("Pull down to scan", TimeSpan.FromMilliseconds(6000));
+                    });
+                }
+                
+            });
+            
         }
 
         
@@ -194,7 +223,7 @@ namespace BLE.Client.ViewModels
             Devices.FirstOrDefault(d => d.Id == e.Device.Id)?.Update();
 
             _userDialogs.HideLoading();
-            _userDialogs.ErrorToast("Error", $"Connection LOST {e.Device.Name}", TimeSpan.FromMilliseconds(6000));
+            _userDialogs.ErrorToast("Error", $"Lost connection to {e.Device.Name}", TimeSpan.FromMilliseconds(6000));
         }
 
         private void OnStateChanged(object sender, BluetoothStateChangedArgs e)
@@ -347,7 +376,7 @@ namespace BLE.Client.ViewModels
             }
             catch (Exception ex)
             {
-                _userDialogs.Alert(ex.Message, "Disconnect error");
+                _userDialogs.Alert("Unable to Disconnect", "Disconnect error");
             }
             finally
             {
@@ -360,8 +389,13 @@ namespace BLE.Client.ViewModels
         {
             if (await ConnectDeviceAsync(device))
             {
-                ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, device.Device.Id.ToString() } }));
+                openDevice(device.Device.Id);
+                //ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, device.Device.Id.ToString() } }));
             }
+        }
+
+        private void openDevice(Guid deviceId) {
+            ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, deviceId.ToString() } }));
         }
 
         private async Task<bool> ConnectDeviceAsync(DeviceListItemViewModel device, bool showPrompt = true)
@@ -441,6 +475,7 @@ namespace BLE.Client.ViewModels
                 }
 
                 _userDialogs.ShowSuccess($"Connected to {device.Name}.");
+                openDevice(device.Id);
 
                 var deviceItem = Devices.FirstOrDefault(d => d.Device.Id == device.Id);
                 if (deviceItem == null)
@@ -452,10 +487,11 @@ namespace BLE.Client.ViewModels
                 {
                     deviceItem.Update(device);
                 }
+                
             }
             catch (Exception ex)
             {
-                _userDialogs.ShowError(ex.Message, 5000);
+                _userDialogs.ShowError($"Couldn't connect to {PreviousName}.", 5000);
                 return;
             }
         }
@@ -489,7 +525,7 @@ namespace BLE.Client.ViewModels
             }
             catch (Exception ex)
             {
-                _userDialogs.Alert(ex.Message, "Failed to connect and dispose.");
+                _userDialogs.Alert("Could not connect", "Failed to connect and dispose.");
             }
             finally
             {
