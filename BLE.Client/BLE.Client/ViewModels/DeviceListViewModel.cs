@@ -18,78 +18,11 @@ using Xamarin.Forms;
 
 namespace BLE.Client.ViewModels
 {
+    /*
+     * DeviceListViewModel manages the BLE connection with the LED driver
+     */
     public class DeviceListViewModel : BaseViewModel
     {
-        //public static IDevice DEVICE = null;
-
-        public MasterPageItem SelectMasterItem
-        {
-            get { return null; }
-            set
-            {
-                menuNavigate(value.Title);
-            }
-        }
-
-        protected override async void InitFromBundle(IMvxBundle parameters)
-        {
-            base.InitFromBundle(parameters);
-
-            Settings.DEVICE = GetDeviceFromBundle(parameters);
-            // DEVICE = _device;
-
-        }
-            
-
-        //private IDevice _device;
-
-        public void menuNavigate(String title)
-        {
-            switch(title)
-            {
-                case "Devices":
-                    break;
-                case "Modes":
-                    
-                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
-                    break;
-                case "Settings":
-                   // ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
-                    break;
-            }
-        }
-        //the master  items
-        public class MasterPageItem
-        {
-            public string Title { get; set; }
-
-            //public string IconSource { get; set; }
-
-            //public Type TargetType { get; set; }
-        }
-
-        public List<MasterPageItem> MenuItems { get; set; } = new List<MasterPageItem>
-            {
-                new MasterPageItem
-                {
-                    Title = "Devices",
-                    //IconSource = "todo.png",
-                    //TargetType = typeof(MainPage)
-                },
-                new MasterPageItem
-                {
-                    Title = "Modes",
-                    //IconSource = "todo.png",
-                   // TargetType = typeof(TabbedPageModeAndAdjustment)
-                },
-                new MasterPageItem
-                {
-                    Title = "Settings",
-                },
-            };
-        //the master  items
-
-
         private readonly IBluetoothLE _bluetoothLe;
         private readonly IUserDialogs _userDialogs;
         private readonly ISettings _settings;
@@ -97,76 +30,9 @@ namespace BLE.Client.ViewModels
         private string _previousName;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public Guid PreviousGuid
-        {
-            get { return _previousGuid; }
-            set
-            {
-                _previousGuid = value;
-                _settings.AddOrUpdateValue("lastguid", _previousGuid.ToString());
-                RaisePropertyChanged();
-                RaisePropertyChanged(() => ConnectToPreviousCommand);
-            }
-        }
-
-        public string PreviousName
-        {
-            get { return _previousName; }
-            set
-            {
-                _previousName = value;
-                _settings.AddOrUpdateValue("lastname", _previousName);
-                RaisePropertyChanged();
-                RaisePropertyChanged(() => ConnectToPreviousCommand);
-                RaisePropertyChanged(() => ReconnectPreviousName);
-            }
-        }
-
-        public string ReconnectPreviousName
-        {
-            get {
-                if (CanConnectToPrevious())
-                    return "Reconnect to " + _previousName;
-                else
-                    return "No Previous Device";
-            }
-        }
-
-        public MvxCommand RefreshCommand => new MvxCommand(() => TryStartScanning(true));
-
-        public MvxCommand<DeviceListItemViewModel> DisconnectCommand => 
-            new MvxCommand<DeviceListItemViewModel>(DisconnectDevice);
-
-        public MvxCommand<DeviceListItemViewModel> ConnectDisposeCommand => 
-            new MvxCommand<DeviceListItemViewModel>(ConnectAndDisposeDevice);
-
-        public ObservableCollection<DeviceListItemViewModel> Devices { get; set; } = 
-            new ObservableCollection<DeviceListItemViewModel>();
-        public bool IsRefreshing => Adapter.IsScanning;
-        public bool IsStateOn => _bluetoothLe.IsOn;
-        public string StateText => GetStateText();
-        public DeviceListItemViewModel SelectedDevice
-        {
-            get { return null; }
-            set
-            {
-                if (value != null)
-                {
-                    HandleSelectedDevice(value);
-                }
-               
-
-                RaisePropertyChanged();
-            }
-        }
-
-        public MvxCommand StopScanCommand => new MvxCommand(() =>
-        {
-            _cancellationTokenSource.Cancel();
-            CleanupCancellationToken();
-            RaisePropertyChanged(() => IsRefreshing);
-        }, () => _cancellationTokenSource != null);
-
+        /*
+         * Constructor for DeviceListViewModel
+         */
         public DeviceListViewModel(IBluetoothLE bluetoothLe, IAdapter adapter, IUserDialogs userDialogs, ISettings settings) : base(adapter)
         {
             _bluetoothLe = bluetoothLe;
@@ -188,8 +54,8 @@ namespace BLE.Client.ViewModels
             Task.Run(async () =>
             {
                 await Task.Delay(2000);
-                
-                if(_bluetoothLe.State == BluetoothState.On) TryStartScanning(true);
+
+                if (_bluetoothLe.State == BluetoothState.On) TryStartScanning(true);
 
                 else
                 {
@@ -198,12 +64,154 @@ namespace BLE.Client.ViewModels
                         _userDialogs.Toast("Pull down to scan", TimeSpan.FromMilliseconds(6000));
                     });
                 }
-                
             });
-            
         }
 
-        
+        /*
+         * Initializes the ViewModel
+         */
+        protected override async void InitFromBundle(IMvxBundle parameters)
+        {
+            base.InitFromBundle(parameters);
+
+            Settings.DEVICE = GetDeviceFromBundle(parameters);
+        }
+
+        /*
+         * Represents a menu item on the menu drawer
+         */
+        public class MasterPageItem
+        {
+            public string Title { get; set; }
+        }
+
+        /*
+         * Sets the newly selected menu item
+         */
+        public MasterPageItem SelectMasterItem
+        {
+            get { return null; }
+            set
+            {
+                menuNavigate(value.Title);
+            }
+        }
+
+        /*
+         * The list of menu items on the menu drawer
+         */
+        public List<MasterPageItem> MenuItems { get; set; } = new List<MasterPageItem>
+            {
+                new MasterPageItem
+                {
+                    Title = "Devices",
+                },
+                new MasterPageItem
+                {
+                    Title = "Modes",
+                },
+                new MasterPageItem
+                {
+                    Title = "Settings",
+                },
+            };
+
+        /*
+         * Determines the action to be performed when a menu item is selected
+         */
+        public void menuNavigate(String title)
+        {
+            switch(title)
+            {
+                case "Devices":
+                    break;
+                case "Modes":
+                    ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
+                    break;
+                case "Settings":
+                    break;
+            }
+        }        
+
+        /*
+         * Gets and sets the previous device
+         */ 
+        public Guid PreviousGuid
+        {
+            get { return _previousGuid; }
+            set
+            {
+                _previousGuid = value;
+                _settings.AddOrUpdateValue("lastguid", _previousGuid.ToString());
+                RaisePropertyChanged();
+                RaisePropertyChanged(() => ConnectToPreviousCommand);
+            }
+        }
+
+        /*
+         * Gets and sets the name of the previous device
+         */ 
+        public string PreviousName
+        {
+            get { return _previousName; }
+            set
+            {
+                _previousName = value;
+                _settings.AddOrUpdateValue("lastname", _previousName);
+                RaisePropertyChanged();
+                RaisePropertyChanged(() => ConnectToPreviousCommand);
+                RaisePropertyChanged(() => ReconnectPreviousName);
+            }
+        }
+
+        /*
+         * Returns whether a connection can be made with the previous device
+         */ 
+        public string ReconnectPreviousName
+        {
+            get {
+                if (CanConnectToPrevious())
+                    return "Reconnect to " + _previousName;
+                else
+                    return "No Previous Device";
+            }
+        }
+
+        public MvxCommand RefreshCommand => new MvxCommand(() => TryStartScanning(true));
+
+        public MvxCommand<DeviceListItemViewModel> DisconnectCommand => 
+            new MvxCommand<DeviceListItemViewModel>(DisconnectDevice);
+
+        public MvxCommand<DeviceListItemViewModel> ConnectDisposeCommand => 
+            new MvxCommand<DeviceListItemViewModel>(ConnectAndDisposeDevice);
+
+        public ObservableCollection<DeviceListItemViewModel> Devices { get; set; } = 
+            new ObservableCollection<DeviceListItemViewModel>();
+
+        public bool IsRefreshing => Adapter.IsScanning;
+        public bool IsStateOn => _bluetoothLe.IsOn;
+        public string StateText => GetStateText();
+
+        public DeviceListItemViewModel SelectedDevice
+        {
+            get { return null; }
+            set
+            {
+                if (value != null)
+                {
+                    HandleSelectedDevice(value);
+                }
+
+                RaisePropertyChanged();
+            }
+        }
+
+        public MvxCommand StopScanCommand => new MvxCommand(() =>
+        {
+            _cancellationTokenSource.Cancel();
+            CleanupCancellationToken();
+            RaisePropertyChanged(() => IsRefreshing);
+        }, () => _cancellationTokenSource != null); 
 
         private Task GetPreviousGuidAsync()
         {
@@ -230,9 +238,11 @@ namespace BLE.Client.ViewModels
         {
             RaisePropertyChanged(nameof(IsStateOn));
             RaisePropertyChanged(nameof(StateText));
-            //TryStartScanning();
         }
 
+        /*
+         * Returns the current BLE state as a string
+         */ 
         private string GetStateText()
         {
             switch (_bluetoothLe.State)
@@ -289,10 +299,7 @@ namespace BLE.Client.ViewModels
             base.Resume();
 
             await GetPreviousGuidAsync();
-            //TryStartScanning();
-
             GetSystemConnectedOrPairedDevices();
-
         }  
 
         private void GetSystemConnectedOrPairedDevices()
@@ -390,7 +397,6 @@ namespace BLE.Client.ViewModels
             if (await ConnectDeviceAsync(device))
             {
                 openDevice(device.Device.Id);
-                //ShowViewModel<PatternViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, device.Device.Id.ToString() } }));
             }
         }
 
@@ -400,15 +406,6 @@ namespace BLE.Client.ViewModels
 
         private async Task<bool> ConnectDeviceAsync(DeviceListItemViewModel device, bool showPrompt = true)
         {
-            //if (device.IsConnected)
-            //{
-            //    return true;
-            //}
-
-            //if (showPrompt && !await _userDialogs.ConfirmAsync($"Connect to device '{device.Name}'?"))
-           // {
-           //     return false;
-           // }
             try
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -447,7 +444,6 @@ namespace BLE.Client.ViewModels
                 device.Update();
             }
         }
-
 
         public MvxCommand ConnectToPreviousCommand => new MvxCommand(ConnectToPreviousDeviceAsync, CanConnectToPrevious);
 
@@ -496,6 +492,9 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        /*
+         * Returns whether a connection can be made with the previous device
+         */ 
         private bool CanConnectToPrevious()
         {
             return PreviousGuid != default(Guid) && PreviousGuid != null && PreviousName != null && PreviousName != "";
@@ -531,8 +530,6 @@ namespace BLE.Client.ViewModels
             {
                 _userDialogs.HideLoading();
             }
-
-
         }
 
         private void OnDeviceDisconnected(object sender, DeviceEventArgs e)

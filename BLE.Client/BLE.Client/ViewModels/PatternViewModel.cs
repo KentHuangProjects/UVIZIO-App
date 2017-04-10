@@ -16,82 +16,44 @@ using BLE.Client.Helpers;
 
 namespace BLE.Client.ViewModels
 {
+    /*
+     * PatternViewModel manages communication between the Mode/Settings pages and the LED driver
+     */ 
     public class PatternViewModel : BaseViewModel
     {
-        
-
-        public MasterPageItem SelectMasterItem
-        {
-            get { return null; }
-            set
-            {
-                menuNavigate(value.Title);
-            }
-        }
-
-        public void menuNavigate(String title)
-        {
-            switch (title)
-            {
-                case "Devices":
-                    Close(this);
-                    //Finish();
-                    //ShowViewModel<DeviceListViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
-                    break;
-                case "Modes":
-                    break;
-                case "Settings":
-                   // ShowViewModel<SettingsViewModel>(new MvxBundle(new Dictionary<string, string> { { DeviceIdKey, Settings.DEVICE?.Id.ToString() } }));
-                    break;
-            }
-        }
-
-        //the master  items
-        public class MasterPageItem
-        {
-            public string Title { get; set; }
-
-
-            //public string IconSource { get; set; }
-
-            //public Type TargetType { get; set; }
-        }
-
-        public List<MasterPageItem> MenuItems { get; set; } = new List<MasterPageItem>
-            {
-                new MasterPageItem
-                {
-                    Title = "Devices",
-                    //IconSource = "todo.png",
-                    //TargetType = typeof(MainPage)
-                },
-                new MasterPageItem
-                {
-                    Title = "Modes",
-                    //IconSource = "todo.png",
-                   // TargetType = typeof(TabbedPageModeAndAdjustment)
-                },
-                new MasterPageItem
-                {
-                    Title = "Settings",
-                },
-            };
-        //the master  items
-
-
-        //private static Guid RFduinoService = Guid.ParseExact("aba8a706-f28c-11e6-bc64-92361f002671", "d");
-        //private static Guid RFduinoWriteCharacteristic = Guid.ParseExact("aba8a708-f28c-11e6-bc64-92361f002671", "d");
-        //private static Guid RFduinoDisconnectCharacteristic = Guid.ParseExact("aba8a709-f28c-11e6-bc64-92361f002671", "d")
-
-        //private IDevice _device;
-
         private ISettings _settings;
-        //private int _speedPct = 200;            // out of 255 not 100 
-        //private int _brightnessPct = 250;
-
-
         private readonly IUserDialogs _userDialogs;
         private bool _updatesStarted;
+
+        /*
+         * Constructor for PatternViewModel
+         */ 
+        public PatternViewModel(IAdapter adapter, IUserDialogs userDialogs, ISettings settings) : base(adapter)
+        {
+            _userDialogs = userDialogs;
+            _settings = settings;
+
+            if (Settings.MODE == null) Settings.MODE = modes[0];
+            currentMode = Settings.MODE;
+
+        }
+
+        /*
+         * Initializes the ViewModel
+         */
+        protected override async void InitFromBundle(IMvxBundle parameters)
+        {
+            base.InitFromBundle(parameters);
+
+            IDevice _device = GetDeviceFromBundle(parameters);
+
+            if (_device != null)
+            {
+                Settings.DEVICE = _device;
+                _settings.AddOrUpdateValue("deviceId", _device.Id.ToString());
+            }
+        }
+
         public ICharacteristic Characteristic { get; private set; }
 
         public string CharacteristicValue => Characteristic?.Value.ToHexString().Replace("-", " ");
@@ -100,6 +62,9 @@ namespace BLE.Client.ViewModels
 
         public string UpdateButtonText => _updatesStarted ? "Stop updates" : "Start updates";
 
+        /*
+         * Returns the granted characteristic permissions
+         */ 
         public string Permissions
         {
             get
@@ -113,37 +78,85 @@ namespace BLE.Client.ViewModels
             }
         }
 
-        
-
-        public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
-            {
-                new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           Mode.RAINBOW ),
-
-                new Mode("Colou Strobe", "bg_2.png", "mode_deselected_icon.png",    Mode.COLOR_STROBE ),
-
-                new Mode("Colou Walk", "bg_3.png", "mode_deselected_icon.png",      Mode.COLOR_WALK),
-
-                new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      Mode.FIRE_PIXEL),
-            };
-        private Mode currentMode { get; set; }
-
-
-        
-            public PatternViewModel(IAdapter adapter, IUserDialogs userDialogs, ISettings settings) : base(adapter)
+        /*
+         * Represents a menu item on the menu drawer
+         */
+        public class MasterPageItem
         {
-            _userDialogs = userDialogs;
-            _settings = settings;
-
-            //_brightnessPct = _settings.GetValueOrDefault("brightness_pct", 100);
-            //int speed = _settings.GetValueOrDefault("speed_pct", 50);
-            //_speedPct = speed;
-
-            if (Settings.MODE == null) Settings.MODE = modes[0];
-            currentMode = Settings.MODE;
-            
+            public string Title { get; set; }
         }
 
-        //the item to be binded AS:SelectedItem="{Binding selectedMode, Mode=TwoWay}" in listview of patternpage
+        /*
+         * Sets the newly selected menu item
+         */
+        public MasterPageItem SelectMasterItem
+        {
+            get { return null; }
+            set
+            {
+                menuNavigate(value.Title);
+            }
+        }
+
+        /*
+         * The list of menu items on the menu drawer
+         */
+        public List<MasterPageItem> MenuItems { get; set; } = new List<MasterPageItem>
+        {
+            new MasterPageItem
+            {
+                Title = "Devices",
+            },
+            new MasterPageItem
+            {
+                Title = "Modes",
+            },
+            new MasterPageItem
+            {
+                Title = "Settings",
+            },
+        };
+
+        /*
+         * Determines the action to be performed when a menu item is selected
+         */
+        public void menuNavigate(String title)
+        {
+            switch (title)
+            {
+                case "Devices":
+                    Close(this);
+                    break;
+                case "Modes":
+                    break;
+                case "Settings":
+                    break;
+            }
+        }
+
+        /*
+         * Adds the modes to the modes list
+         */
+        public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
+        {
+            new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           Mode.RAINBOW),
+
+            new Mode("Color Strobe", "bg_2.png", "mode_deselected_icon.png",    Mode.COLOR_STROBE),
+
+            new Mode("Color Walk", "bg_3.png", "mode_deselected_icon.png",      Mode.COLOR_WALK),
+
+            new Mode("Fire Pixel", "bg_4.png", "mode_deselected_icon.png",      Mode.FIRE_PIXEL),
+        };
+
+        /*
+         * The currently selected mode
+         */ 
+        private Mode currentMode { get; set; }
+
+        /*
+         * The item to be binded AS:SelectedItem="{Binding selectedMode, Mode=TwoWay}" 
+         * in the listview of PatternPage
+         */ 
         public Mode selectedMode
         {
             get
@@ -152,9 +165,9 @@ namespace BLE.Client.ViewModels
             }
             set
             {
-                if(value!=null && currentMode != value)
+                if(value != null && currentMode != value)
                 {
-                    //call the function to change the icon(selection)
+                    // sets the selected icon (green circle) for the newly selected mode
                     Pattern_ItemSelected(value);
 
                     uvizioWriting(value.BleWritingText);
@@ -164,11 +177,11 @@ namespace BLE.Client.ViewModels
             }
         }
 
-
-
+        /*
+         * Updates the UI representation of which mode is selected (i.e. has the green cirle icon)
+         */ 
         private void  Pattern_ItemSelected(Mode selected)
         {
-
             if (selected != currentMode)
             {
                 selected.SelectedImageSrc = "mode_selected_icon.png";
@@ -176,9 +189,11 @@ namespace BLE.Client.ViewModels
 
                 currentMode = selected;
             }
-
         }
-        //function to send different modes to BLE device
+
+        /*
+         * Sends the new mode to BLE device
+         */    
         private async void uvizioWriting(string commandtext, bool showErrors = true)
         {
             try
@@ -209,41 +224,15 @@ namespace BLE.Client.ViewModels
             }
         }
 
-        protected override async void InitFromBundle(IMvxBundle parameters)
-        {
-            base.InitFromBundle(parameters);
-
-            IDevice _device = GetDeviceFromBundle(parameters);
-            if (_device != null)
-            {
-                Settings.DEVICE = _device;
-                _settings.AddOrUpdateValue("deviceId", _device.Id.ToString());
-            }
-            //TODO when sending data, validate
-            //if (_device == null)
-            //{
-            //    Close(this);
-            //}
-            //var service = await _device.GetServiceAsync(RFduinoService);
-            //Characteristic = await service.GetCharacteristicAsync(RFduinoWriteCharacteristic);
-        }
-
         public override void Resume()
         {
             base.Resume();
-
-            //TODO when sending data, validate
-
-            //if (Characteristic != null)
-            //{
-            //    return;
-            //}
-
-            //Close(this);
         }
 
-        public MvxCommand ReadCommand => new MvxCommand(ReadValueAsync);
 
+        /*
+         * Reads the BLE characteristics
+         */ 
         private async void ReadValueAsync()
         {
             if (Characteristic == null)
@@ -269,32 +258,11 @@ namespace BLE.Client.ViewModels
             {
                 _userDialogs.HideLoading();
             }
-
         }
 
-        // ViewModel
-        public string WriteText { get; set; }
-        
-        //new MvxCommand
-        public MvxCommand<string> InputCommand => new MvxCommand<string>(async param =>
-        {
-            try
-            {
-                WriteText = param;
-
-                await Characteristic.WriteAsync(GetBytes(param));
-                RaisePropertyChanged(() => CharacteristicValue);
-                Messages.Insert(0, $"Wrote value {CharacteristicValue}");
-            }
-            catch (Exception ex)
-            {
-                _userDialogs.HideLoading();
-                _userDialogs.ShowError(ex.Message);
-            }
-        });
-
-        public MvxCommand WriteCommand => new MvxCommand(WriteValueAsync);
-
+        /*
+         * Writes the BLE characteristics
+         */
         private async void WriteValueAsync()
         {
             try
@@ -321,9 +289,38 @@ namespace BLE.Client.ViewModels
                 _userDialogs.HideLoading();
                 _userDialogs.ShowError(ex.Message);
             }
-
         }
 
+        // ViewModel
+        public string WriteText { get; set; }
+        
+        /*
+         * new MvxCommand
+         */
+        public MvxCommand<string> InputCommand => new MvxCommand<string>(async param =>
+        {
+            try
+            {
+                WriteText = param;
+
+                await Characteristic.WriteAsync(GetBytes(param));
+                RaisePropertyChanged(() => CharacteristicValue);
+                Messages.Insert(0, $"Wrote value {CharacteristicValue}");
+            }
+            catch (Exception ex)
+            {
+                _userDialogs.HideLoading();
+                _userDialogs.ShowError(ex.Message);
+            }
+        });
+
+        public MvxCommand ReadCommand => new MvxCommand(ReadValueAsync);
+
+        public MvxCommand WriteCommand => new MvxCommand(WriteValueAsync);
+
+        /*
+         * Parse the byte string and return it as an array
+         */ 
         private static byte[] GetBytes(string text)
         {
             while (text.Split(' ').Length < 3)
@@ -332,19 +329,17 @@ namespace BLE.Client.ViewModels
             return text.Split(' ').Where(token => !string.IsNullOrEmpty(token)).Select(token => Convert.ToByte(token, 16)).ToArray();
         }
 
-        
-        
+        /*
+         * The speed of the LED pattern
+         */
         public int Speed
         {
             get { return Settings.SPEED; }
             set
             {
-                //L.Info("PatternViewModel", "Setting speed to "+_speedPct);
-
                 Settings.SPEED = value;
                 _settings.AddOrUpdateValue("speed_pct", value);
 
-                //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
                 var last = Settings.LAST_COMMAND;
                 if(last != null) uvizioWriting(last, false);
 
@@ -352,6 +347,9 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        /*
+         * The brightess of the LEDs
+         */
         public int Brightness
         {
             get { return Settings.BRIGHTNESS; }
@@ -360,74 +358,11 @@ namespace BLE.Client.ViewModels
                 Settings.BRIGHTNESS = value;
                 _settings.AddOrUpdateValue("brightness_pct", value);
 
-                //var last = _settings.GetValueOrDefault<string>("lastcommand", null);
                 var last = Settings.LAST_COMMAND;
                 if (last != null) uvizioWriting(last, false);
 
                 RaisePropertyChanged();
             }
-        }
-
-    
-
-        //public MvxCommand ToggleUpdatesCommand => new MvxCommand((() =>
-        //{
-        //    if (_updatesStarted)
-        //    {
-        //        StopUpdates();
-        //    }
-        //    else
-        //    {
-        //        StartUpdates();
-        //    }
-        //}));
-
-        //private async void StartUpdates()
-        //{
-        //    try
-        //    {
-        //        _updatesStarted = true;
-
-        //        Characteristic.ValueUpdated -= CharacteristicOnValueUpdated;
-        //        Characteristic.ValueUpdated += CharacteristicOnValueUpdated;
-        //        await Characteristic.StartUpdatesAsync();
-
-
-        //        Messages.Insert(0, $"Start updates");
-
-        //        RaisePropertyChanged(() => UpdateButtonText);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _userDialogs.ShowError(ex.Message);
-        //    }
-        //}
-
-        //private async void StopUpdates()
-        //{
-        //    try
-        //    {
-        //        _updatesStarted = false;
-
-        //        await Characteristic.StopUpdatesAsync();
-        //        Characteristic.ValueUpdated -= CharacteristicOnValueUpdated;
-
-        //        Messages.Insert(0, $"Stop updates");
-
-        //        RaisePropertyChanged(() => UpdateButtonText);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _userDialogs.ShowError(ex.Message);
-        //    }
-        //}
-
-        //private void CharacteristicOnValueUpdated(object sender, CharacteristicUpdatedEventArgs characteristicUpdatedEventArgs)
-        //{
-        //    Messages.Insert(0, $"Updated value: {CharacteristicValue}");
-        //    RaisePropertyChanged(() => CharacteristicValue);
-        //}
+        }        
     }
 }

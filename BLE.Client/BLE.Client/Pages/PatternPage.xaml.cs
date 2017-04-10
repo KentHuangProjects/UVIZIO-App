@@ -12,7 +12,6 @@ using static BLE.Client.ViewModels.PatternViewModel;
 
 namespace BLE.Client.Pages
 {
-
     public partial class PatternPage 
     {
         BaseCarouselPage tabPage;
@@ -27,25 +26,18 @@ namespace BLE.Client.Pages
             tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");
 
             tabPage.CurrentPageChanged += CurrentPageChanged;
-
-            
-
-
-
-
-
-        //ModeList.SelectedItem = modes.ElementAt(0);
-
-
         }
 
+        /*
+         * Navigate to the settings page
+         */ 
         private void goingToSetting(object sender, System.EventArgs e) {
             tabPage.CurrentPage = tabPage.Children[1];
         }
 
-
-
-
+        /*
+         * Alternate between the Modes and Settings pages
+         */ 
         private void CurrentPageChanged(object sender, System.EventArgs e)
         {
             Debug.WriteLine(e.GetType().ToString());
@@ -59,8 +51,9 @@ namespace BLE.Client.Pages
             }
         }
 
-
-
+        /*
+         * Navigate to the page selected from the menu drawer
+         */ 
         private void listView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
             tabPage = this.FindByName<BaseCarouselPage>("BaseCarouselPage");

@@ -15,35 +15,17 @@ namespace BLE.Client.Helpers
     {
         public static async Task writeDevice(IDevice device, IUserDialogs _userDialogs, String commandtext)
         {
-
             Settings.LAST_COMMAND = commandtext;
-            //string orig = _settings.GetValueOrDefault<string>("lastcommand", null);
-
-            //_settings.AddOrUpdateValue("lastcommand", commandtext);
-
-            //if (orig == null) return;
 
             var service = await Settings.DEVICE.GetServiceAsync(KnownServices.RFDUINO_SERVICE);
             var Characteristic = await service.GetCharacteristicAsync(KnownCharacteristics.RFDUINO_WRITE);
-
             var data = GetBytes(commandtext);
-
-            /*
-            int period = (_speedPct) * 1000;
-            data[1] = (byte)period;
-            data[2] = (byte)(period >> 8);
-            */
 
             // not actually a pct 
             data[1] = (byte)Settings.BRIGHTNESS;
             data[2] = (byte)Settings.SPEED;
 
-
-            //_userDialogs.ShowLoading("Setting " + data.ToHexString());
             await Characteristic.WriteAsync(data);
-            //_userDialogs.HideLoading();
-
-            //RaisePropertyChanged(() => CharacteristicValue);
         }
 
         public static async Task disconnectDevice(DeviceListItemViewModel device, IUserDialogs _userDialogs)
@@ -65,6 +47,5 @@ namespace BLE.Client.Helpers
 
             return text.Split(' ').Where(token => !string.IsNullOrEmpty(token)).Select(token => Convert.ToByte(token, 16)).ToArray();
         }
-
     }
 }

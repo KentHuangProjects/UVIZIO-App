@@ -10,16 +10,12 @@ namespace BLE.Client.ViewModels
 {
     public class DeviceListItemViewModel : MvxNotifyPropertyChanged
     {
-
-        
-
         public IDevice Device { get; private set; }
 
         public Guid Id => Device.Id;
         public bool IsConnected => Device.State == DeviceState.Connected;
         public int Rssi => Device.Rssi;
         public string Name => Device.Name;
-        //public Image ConnectionImage => GetConnectionImage(Device.Rssi);
         public string ConnectionImageString => GetConnectionImageString(Device.Rssi);
 
         public DeviceListItemViewModel(IDevice device)

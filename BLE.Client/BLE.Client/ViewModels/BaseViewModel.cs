@@ -16,6 +16,9 @@ namespace BLE.Client.ViewModels
         protected const string CharacteristicIdKey = "CharacteristicIdNavigationKey";
         protected const string DescriptorIdKey = "DescriptorIdNavigationKey";
 
+        /*
+         * Constructor for BaseViewModel
+         */
         public BaseViewModel(IAdapter adapter)
         {
             Adapter = adapter;
@@ -31,6 +34,9 @@ namespace BLE.Client.ViewModels
             Mvx.Trace("Suspend {0}", GetType().Name);
         }
 
+        /*
+         * Initializes the ViewModel
+         */
         protected override void InitFromBundle(IMvxBundle parameters)
         {
             base.InitFromBundle(parameters);

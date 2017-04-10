@@ -8,9 +8,11 @@ using Xamarin.Forms;
 
 namespace BLE.Client.ViewModels
 {
+    /*
+     * Mode represents the different preset LED patterns that can be sent to the driver
+     */
     public class Mode : INotifyPropertyChanged
     {
-
         public static string OFF = "00";
         public static string STATIC = "01";
         public static string BLINK = "02";
@@ -35,7 +37,10 @@ namespace BLE.Client.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Mode(string name, string backgroundImageSrc, string selectedImageSrc,string bleWritingText)
+        /*
+         * Contructors a new mode
+         */ 
+        public Mode(string name, string backgroundImageSrc, string selectedImageSrc, string bleWritingText)
         {
             this.name = name;
             this.backgroundImageSrc = backgroundImageSrc;
@@ -43,6 +48,9 @@ namespace BLE.Client.ViewModels
             this.bleWritingText = bleWritingText;
         }
 
+        /*
+         * The BLE text to write when a mode is selected
+         */ 
         public string BleWritingText
         {
             get
@@ -55,6 +63,9 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        /*
+         * The name of the mode
+         */ 
         public string Name
         {
             get
@@ -67,6 +78,9 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        /*
+         * The background image source of the mode
+         */ 
         public string BackgroundImageSrc
         {
             get
@@ -79,6 +93,9 @@ namespace BLE.Client.ViewModels
             }
         }
 
+        /*
+         * The icon that displays whether or not the mode is selected
+         */ 
         public string SelectedImageSrc
         {
             get

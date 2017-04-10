@@ -17,8 +17,11 @@ namespace BLE.Client.Droid
     public class MainActivity
         : FormsAppCompatActivity
     {
+        /*
+         * The required permissions
+         */
         private readonly string[] Permissions =
-       {
+        {
             Manifest.Permission.Bluetooth,
             Manifest.Permission.BluetoothAdmin,
             Manifest.Permission.BluetoothPrivileged,
@@ -54,28 +57,23 @@ namespace BLE.Client.Droid
             Mvx.Resolve<IMvxAppStart>().Start();
         }
 
+        /*
+         * Checks to see if the required permissions have been granted, and requests them if they haven't
+         */
         private void CheckPermissions()
         {
             bool minimumPermissionsGranted = true;
 
             foreach (string permission in Permissions)
             {
-                if (CheckSelfPermission(permission) != Permission.Granted) minimumPermissionsGranted = false;
+                if (CheckSelfPermission(permission) != Permission.Granted)
+                {
+                    minimumPermissionsGranted = false;
+                }
             }
 
             // If one of the minimum permissions aren't granted, we request them from the user
             if (!minimumPermissionsGranted) RequestPermissions(Permissions, 0);
         }
-
-        /*
-        public override void OnBackPressed()
-        {
-            return;
-            Finish();
-            base.OnBackPressed();
-            //base.OnBackPressed() p
-        }
-        */
-
     }
 }
