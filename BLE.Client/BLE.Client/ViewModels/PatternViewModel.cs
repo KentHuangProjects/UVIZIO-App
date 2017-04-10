@@ -35,6 +35,7 @@ namespace BLE.Client.ViewModels
 
             if (Settings.MODE == null) Settings.MODE = modes[0];
             currentMode = Settings.MODE;
+            selectedMode = Settings.MODE;
 
         }
 
@@ -139,7 +140,7 @@ namespace BLE.Client.ViewModels
          */
         public ObservableCollection<Mode> modes { get; set; }= new ObservableCollection<Mode>
         {
-            new Mode("Rainbow", "bg_1.png", "mode_selected_icon.png",           Mode.RAINBOW),
+            new Mode("Rainbow", "bg_1.png", "mode_deselected_icon.png",         Mode.RAINBOW),
 
             new Mode("Color Strobe", "bg_2.png", "mode_deselected_icon.png",    Mode.COLOR_STROBE),
 
@@ -165,7 +166,7 @@ namespace BLE.Client.ViewModels
             }
             set
             {
-                if(value != null && currentMode != value)
+                if (value != null && currentMode != value && currentMode != null )
                 {
                     // sets the selected icon (green circle) for the newly selected mode
                     Pattern_ItemSelected(value);
@@ -182,7 +183,7 @@ namespace BLE.Client.ViewModels
          */ 
         private void  Pattern_ItemSelected(Mode selected)
         {
-            if (selected != currentMode)
+            if (true || selected != currentMode)
             {
                 selected.SelectedImageSrc = "mode_selected_icon.png";
                 currentMode.SelectedImageSrc = "mode_deselected_icon.png";
