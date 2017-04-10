@@ -22,8 +22,8 @@ namespace BLE.Client.Helpers
             var data = GetBytes(commandtext);
 
             // not actually a pct 
-            data[1] = (byte)Settings.BRIGHTNESS;
-            data[2] = (byte)Settings.SPEED;
+            data[1] = (byte)Settings.SPEED;
+            data[2] = (byte)Settings.BRIGHTNESS;
 
             await Characteristic.WriteAsync(data);
         }
