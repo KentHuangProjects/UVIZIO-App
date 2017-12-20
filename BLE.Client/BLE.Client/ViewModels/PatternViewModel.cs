@@ -36,7 +36,6 @@ namespace BLE.Client.ViewModels
             if (Settings.MODE == null) Settings.MODE = modes[0];
             currentMode = Settings.MODE;
             selectedMode = Settings.MODE;
-
         }
 
         /*
